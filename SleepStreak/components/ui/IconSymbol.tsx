@@ -13,6 +13,8 @@ const MAPPING = {
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'moon.fill': 'nightlight-round',
+  'trophy.fill': 'emoji-events',
 } as Partial<
   Record<
     import('expo-symbols').SymbolViewProps['name'],
