@@ -17,7 +17,7 @@ export default function Login() {
       .then(() => {
         console.log('logged in');
         router.push({
-          pathname: '/(tabs)/sleep',
+          pathname: '/(tabs)',
           params: { email: email },
         });
       })
@@ -32,7 +32,7 @@ export default function Login() {
       .then(() => {
         console.log('signed in');
         router.push({
-          pathname: '/(tabs)/sleep',
+          pathname: '/(tabs)',
           params: { email: email },
         });
       })

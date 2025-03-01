@@ -11,7 +11,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="sleep"
+        name="index"
         options={{
           title: 'Sleep',
           tabBarIcon: ({ color }) => (

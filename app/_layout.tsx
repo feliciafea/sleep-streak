@@ -1,45 +1,43 @@
 import { FirebaseAuthTypes, getAuth } from '@react-native-firebase/auth';
-import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import { View, ActivityIndicator } from 'react-native';
 
 export default function RootLayout() {
-  const [loaded, setLoaded] = useState(false);
+  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
   const [initializing, setInitializing] = useState(true);
   const router = useRouter();
-  const [fonstLoaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
 
   useEffect(() => {
-    const subscriber = getAuth().onAuthStateChanged((user) => {
-      if (initializing) setInitializing(false);
-      if (user) {
-        router.push({
-          pathname: '/(tabs)/sleep',
-        });
-      }
-    });
+    const subscriber = getAuth().onAuthStateChanged(
+      (user: FirebaseAuthTypes.User | null) => {
+        if (initializing) setInitializing(false);
+        setUser(user);
+      },
+    );
     return subscriber; // unsubscribe on unmount
   }, []);
 
   useEffect(() => {
-    if (fonstLoaded && !initializing) {
-      setLoaded(true);
-    }
-  }, [fonstLoaded, initializing]);
+    if (initializing) return;
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    if (user) {
+      router.replace({
+        pathname: '/(tabs)',
+      });
+    } else {
+      router.replace('/login');
     }
-  }, [loaded]);
+  }, [user, initializing]);
+
+  if (initializing)
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
 
   return (
     <>
