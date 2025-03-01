@@ -1,9 +1,10 @@
 import { Text, View, StyleSheet, TextInput, Button } from 'react-native';
-import auth, {
+import {
   createUserWithEmailAndPassword,
+  getAuth,
   signInWithEmailAndPassword,
 } from '@react-native-firebase/auth';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { router } from 'expo-router';
 
 export default function Login() {
@@ -12,7 +13,7 @@ export default function Login() {
   const [logInError, setLogInError] = useState('');
 
   const signIn = () => {
-    signInWithEmailAndPassword(auth(), email, password)
+    signInWithEmailAndPassword(getAuth(), email, password)
       .then(() => {
         console.log('logged in');
         router.push({
@@ -27,7 +28,7 @@ export default function Login() {
   };
 
   const createAccount = () => {
-    createUserWithEmailAndPassword(auth(), email, password)
+    createUserWithEmailAndPassword(getAuth(), email, password)
       .then(() => {
         console.log('signed in');
         router.push({
@@ -58,13 +59,13 @@ export default function Login() {
         onChangeText={(text) => setPass(text)}
       ></TextInput>
 
-      <View style={styles.butttonContainer} />
+      <View style={styles.buttonContainer} />
       <Button title="Log in" onPress={signIn}></Button>
-      <View style={styles.butttonContainer} />
+      <View style={styles.buttonContainer} />
       <Text> or </Text>
-      <View style={styles.butttonContainer} />
+      <View style={styles.buttonContainer} />
       <Button title="Sign up" onPress={createAccount}></Button>
-      <View style={styles.butttonContainer} />
+      <View style={styles.buttonContainer} />
       {logInError ? <Text style={styles.text}>{logInError}</Text> : null}
     </View>
   );
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     padding: 15,
     color: 'black',
   },
-  butttonContainer: {
+  buttonContainer: {
     padding: 5,
   },
   title: {
