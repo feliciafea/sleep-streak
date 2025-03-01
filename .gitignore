@@ -41,3 +41,7 @@ app-example
 # Build Directories
 /android
 /ios
+
+# Firebase creds
+google-services.json
+GoogleService-Info.plist
