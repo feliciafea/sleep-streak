@@ -11,14 +11,6 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Log In',
-          tabBarStyle: { display: 'none' },
-          href: null,
-        }}
-      />
-      <Tabs.Screen
         name="sleep"
         options={{
           title: 'Sleep',

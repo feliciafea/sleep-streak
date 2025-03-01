@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, TextInput, Button } from 'react-native';
-import { FIREBASE_AUTH } from '../../firebaseConfig';
+import { FIREBASE_AUTH } from '../firebaseConfig';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -7,7 +7,7 @@ import {
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 
-export default function Index() {
+export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPass] = useState('');
   const [logInError, setLogInError] = useState('');
@@ -18,7 +18,7 @@ export default function Index() {
       .then(() => {
         console.log('logged in');
         router.push({
-          pathname: '/sleep',
+          pathname: '/(tabs)/sleep',
           params: { email: email },
         });
       })
@@ -32,7 +32,7 @@ export default function Index() {
       .then(() => {
         console.log('signed in');
         router.push({
-          pathname: '/sleep',
+          pathname: '/(tabs)/sleep',
           params: { email: email },
         });
       })
