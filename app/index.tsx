@@ -1,9 +1,8 @@
 import { Text, View, StyleSheet, TextInput, Button } from 'react-native';
-import { FIREBASE_AUTH } from '../firebaseConfig';
-import {
+import auth, {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-} from 'firebase/auth';
+} from '@react-native-firebase/auth';
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 
@@ -11,10 +10,9 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPass] = useState('');
   const [logInError, setLogInError] = useState('');
-  const auth = FIREBASE_AUTH;
 
   const signIn = () => {
-    signInWithEmailAndPassword(auth, email, password)
+    signInWithEmailAndPassword(auth(), email, password)
       .then(() => {
         console.log('logged in');
         router.push({
@@ -27,8 +25,9 @@ export default function Login() {
         setLogInError(error.message);
       });
   };
+
   const createAccount = () => {
-    createUserWithEmailAndPassword(auth, email, password)
+    createUserWithEmailAndPassword(auth(), email, password)
       .then(() => {
         console.log('signed in');
         router.push({
