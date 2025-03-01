@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "402325774920",
+    "project_id": "sleep-streak-ecbcc",
+    "storage_bucket": "sleep-streak-ecbcc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:402325774920:android:3869cfaa6ff6678df7ee7d",
+        "android_client_info": {
+          "package_name": "com.sleeperagents.sleepstreak"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3XFK7Kxs_i0k3Y6h3Zdn6TJE0AxjuBl0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
