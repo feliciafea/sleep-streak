@@ -22,6 +22,8 @@ import delay from './delay';
 // Sleep Tracking Task that runs every 15 minutes and checks for movement
 // If movement is detected, it increases the penalty by 1
 TaskManager.defineTask('SLEEP_TRACKING_TASK', async () => {
+  console.log('Running sleep tracking task');
+
   const ACC_THRESHOLD = 0.2;
   const ROT_THRESHOLD = 0.2;
 
@@ -41,12 +43,16 @@ TaskManager.defineTask('SLEEP_TRACKING_TASK', async () => {
       alpha * alpha + beta * beta + gamma * gamma,
     );
 
+    console.log('Total Acceleration: ', totalAcceleration);
+    console.log('Total Rotation: ', totalRotation);
+
     if (totalAcceleration > ACC_THRESHOLD || totalRotation > ROT_THRESHOLD) {
       // If movement is detected, increase the penalty
       check += 1;
     }
   });
 
+  console.log('Wating...');
   // Wait for 5 seconds
   await delay(5000);
 
@@ -59,6 +65,11 @@ TaskManager.defineTask('SLEEP_TRACKING_TASK', async () => {
       return BackgroundFetch.BackgroundFetchResult.Failed;
     }
   }
+
+  console.log('Check: ', check);
+  console.log('Penalty: ', await AsyncStorage.getItem('sleepPenalty'));
+
+  console.log('Sleep tracking completed');
 
   return BackgroundFetch.BackgroundFetchResult.NewData;
 });
