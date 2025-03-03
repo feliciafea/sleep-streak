@@ -115,12 +115,14 @@ export const stopSleepSession = async (
   }
 
   const db = getFirestore();
+  const penalty = await AsyncStorage.getItem('sleepPenalty');
 
   // Update the sleep session document in Firestore
   const docRef = doc(db, 'sleepSessions', sleepSessionID);
   await updateDoc(docRef, {
     endTime: serverTimestamp(),
     active: false,
+    penalty: Number(penalty),
   });
 
   // Clear the session ID and penalty from AsyncStorage
