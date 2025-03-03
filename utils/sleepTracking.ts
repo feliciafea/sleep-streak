@@ -1,5 +1,17 @@
-import firestore, {
+import {
+  getFirestore,
+  collection,
+  doc,
+  addDoc,
+  updateDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  serverTimestamp,
   FirebaseFirestoreTypes,
+  getDocs,
+  getDoc,
 } from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as BackgroundFetch from 'expo-background-fetch';
@@ -66,11 +78,13 @@ export const startSleepSession = async (
     throw new Error('Motion permission not granted');
   }
 
+  const db = getFirestore();
+
   // Create sleepSession document in Firestore
-  const sleep = await firestore().collection('sleepSessions').add({
+  const sleep = await addDoc(collection(db, 'sleepSessions'), {
     userID: userID,
     penalty: 0,
-    startTime: firestore.FieldValue.serverTimestamp(),
+    startTime: serverTimestamp(),
     active: true,
   });
 
@@ -85,7 +99,7 @@ export const startSleepSession = async (
     startOnBoot: false,
   });
 
-  return await sleep.get();
+  return await getDoc(sleep);
 };
 
 export const stopSleepSession = async (
@@ -100,10 +114,12 @@ export const stopSleepSession = async (
     throw new Error('No active sleep session found');
   }
 
+  const db = getFirestore();
+
   // Update the sleep session document in Firestore
-  const docRef = firestore().collection('sleepSessions').doc(sleepSessionID);
-  await docRef.update({
-    endTime: firestore.FieldValue.serverTimestamp(),
+  const docRef = doc(db, 'sleepSessions', sleepSessionID);
+  await updateDoc(docRef, {
+    endTime: serverTimestamp(),
     active: false,
   });
 
@@ -112,17 +128,20 @@ export const stopSleepSession = async (
   await AsyncStorage.removeItem('sleepPenalty');
 
   // Return the updated document
-  return await docRef.get();
+  return await getDoc(docRef);
 };
 
 export const getActiveSleepSession = async (
   userID: string,
 ): Promise<FirebaseFirestoreTypes.QuerySnapshot | null> => {
-  return await firestore()
-    .collection('sleepSessions')
-    .where('userID', '==', userID)
-    .where('active', '==', true)
-    .orderBy('startTime', 'desc')
-    .limit(1)
-    .get();
+  const db = getFirestore();
+  return await getDocs(
+    query(
+      collection(db, 'sleepSessions'),
+      where('userID', '==', userID),
+      where('active', '==', true),
+      orderBy('startTime', 'desc'),
+      limit(1),
+    ),
+  );
 };
