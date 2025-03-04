@@ -102,7 +102,6 @@ export const startSleepSession = async (
   });
 
   // Save the session ID and sleepPenalty in AsyncStorage
-  await AsyncStorage.setItem('sleepSessionID', sleep.id);
   await AsyncStorage.setItem('sleepPenalty', String(0));
 
   // Start background task that runs every 15 minutes
@@ -121,28 +120,27 @@ export const stopSleepSession = async (
   // Stop the background task
   await BackgroundFetch.unregisterTaskAsync('SLEEP_TRACKING_TASK');
 
-  // Get the sleep session ID from AsyncStorage
-  const sleepSessionID = await AsyncStorage.getItem('sleepSessionID');
-  if (!sleepSessionID) {
-    throw new Error('No active sleep session found');
+  const activeSession = await getActiveSleepSession(userID);
+  let sessionData: FirebaseFirestoreTypes.DocumentData | null = null;
+  if (activeSession && !activeSession.empty) {
+    sessionData = activeSession.docs[0].data();
+  } else {
+    throw new Error('User does not have an active sleep session');
   }
 
   const db = getFirestore();
   const penalty = await AsyncStorage.getItem('sleepPenalty');
 
   // Update the sleep session document in Firestore
-  const docRef = doc(db, 'sleepSessions', sleepSessionID);
+  const docRef = doc(db, 'sleepSessions', sessionData?.id);
   await updateDoc(docRef, {
     endTime: serverTimestamp(),
     active: false,
     penalty: Number(penalty),
   });
 
-  // Clear the session ID and penalty from AsyncStorage
-  await AsyncStorage.removeItem('sleepSessionID');
+  // Clear the penalty from AsyncStorage and return the session data
   await AsyncStorage.removeItem('sleepPenalty');
-
-  // Return the updated document
   return await getDoc(docRef);
 };
 
