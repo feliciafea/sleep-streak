@@ -52,9 +52,11 @@ TaskManager.defineTask('SLEEP_TRACKING_TASK', async () => {
     }
   });
 
-  console.log('Wating...');
+  console.log('Waiting...');
   // Wait for 5 seconds
   await delay(5000);
+
+  DeviceMotion.removeAllListeners();
 
   // Update the penalty in AsyncStorage if check > 0
   if (check > 0) {
