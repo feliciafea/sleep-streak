@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, TextInput, Button } from 'react-native';
+import { Text, View, StyleSheet, TextInput, Button, TouchableOpacity } from 'react-native';
 import {
   createUserWithEmailAndPassword,
   getAuth,
@@ -12,6 +12,9 @@ import {
   getFirestore,
   setDoc,
 } from '@react-native-firebase/firestore';
+import { COLORS } from '../constants/theme';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -66,7 +69,15 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome</Text>
+      <View style={styles.titleContainer}>
+        <MaterialCommunityIcons 
+          name="moon-waning-crescent" 
+          size={80} 
+          color={COLORS.accent}
+          style={styles.icon}
+        />
+        <Text style={styles.title}>SleepStreak</Text>
+      </View>
       <TextInput
         value={email}
         style={styles.textInput}
@@ -81,14 +92,18 @@ export default function Login() {
         onChangeText={(text) => setPass(text)}
       ></TextInput>
 
-      <View style={styles.buttonContainer} />
-      <Button title="Log in" onPress={signIn}></Button>
-      <View style={styles.buttonContainer} />
-      <Text> or </Text>
-      <View style={styles.buttonContainer} />
-      <Button title="Sign up" onPress={createAccount}></Button>
-      <View style={styles.buttonContainer} />
-      {logInError ? <Text style={styles.text}>{logInError}</Text> : null}
+      <TouchableOpacity style={styles.logInButton} onPress={signIn}>
+        <Text style={styles.text}>Log in</Text>
+      </TouchableOpacity>
+      <View style={styles.signupContainer}>
+        <Text style={styles.text}>Don't have an account? </Text>
+        <TouchableOpacity onPress={createAccount}>
+          <Text style={[styles.text, styles.signupText]}>Sign up</Text>
+        </TouchableOpacity>
+      </View>
+      {logInError ? <Text style={
+        [styles.text, { color: COLORS.error }]
+      }>{logInError}</Text> : null}
     </View>
   );
 }
@@ -99,26 +114,52 @@ const styles = StyleSheet.create({
     height: 50,
     width: 250,
     borderWidth: 1,
-    borderRadius: 4,
+    borderRadius: 8,
+    borderColor: COLORS.text,
     padding: 10,
-    backgroundColor: '#ffff',
+    margin: 10,
+    backgroundColor: COLORS.lightBackground,
   },
   container: {
     flex: 1,
-    backgroundColor: '#fff6d4',
+    backgroundColor: COLORS.background,
     alignItems: 'center',
     justifyContent: 'center',
   },
   text: {
-    padding: 15,
-    color: 'black',
-  },
-  buttonContainer: {
     padding: 5,
+    color: COLORS.text,
+  },
+  logInButton: {
+    width: 250,
+    height: 50,
+    backgroundColor: COLORS.accent,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 10,
+  },
+  signupContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  signupText: {
+    color: COLORS.accent,
+    fontWeight: '600',
+    padding: 0,  
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    margin: 10,
+    color: COLORS.text,
+  },
+  icon: {
     marginBottom: 20,
+  },
+  titleContainer: {
+    alignItems: 'center',
+    padding: 30,
   },
 });

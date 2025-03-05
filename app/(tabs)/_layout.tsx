@@ -1,13 +1,25 @@
-import { Tabs } from 'expo-router';
+import { router, Tabs } from 'expo-router';
 import React from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { TouchableOpacity } from 'react-native';
+import { COLORS } from '../../constants/theme';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
+        headerTitle: '',
+        headerShadowVisible: false,
+        headerLeft: () => (
+          <TouchableOpacity style={{ margin: 20 }} onPress={() => router.push({ pathname: '../login' })}>
+            <MaterialCommunityIcons name="logout" size={24} color="black" />
+          </TouchableOpacity>
+        ),
+        // headerStyle: {
+        //   backgroundColor: COLORS.background,
+        // },
       }}
     >
       <Tabs.Screen
