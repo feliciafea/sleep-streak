@@ -32,7 +32,6 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({ user }) => {
     }
   }, [user]);
 
-  // TODO: get date from startTime
   const handleStartTracking = async () => {
     try {
       const session = await startSleepSession(user.uid);
@@ -57,8 +56,6 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({ user }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sleep Tracking</Text>
-
       {isTracking ? (
         <View style={styles.trackingContainer}>
           <Text style={styles.trackingText}>
@@ -86,10 +83,11 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({ user }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    backgroundColor: '#CCC',
-    borderRadius: 10,
-    marginVertical: 10,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 10,
   },
   title: {
     fontSize: 20,

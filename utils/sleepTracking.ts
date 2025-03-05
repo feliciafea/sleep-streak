@@ -118,13 +118,14 @@ export const stopSleepSession = async (
   userID: string,
 ): Promise<FirebaseFirestoreTypes.DocumentSnapshot | null> => {
   // Stop the background task
-  await BackgroundFetch.unregisterTaskAsync('SLEEP_TRACKING_TASK');
+  try {
+    await BackgroundFetch.unregisterTaskAsync('SLEEP_TRACKING_TASK');
+  } catch {
+    console.log('Error unregistering task');
+  }
 
   const activeSession = await getActiveSleepSession(userID);
-  let sessionData: FirebaseFirestoreTypes.DocumentData | null = null;
-  if (activeSession && !activeSession.empty) {
-    sessionData = activeSession.docs[0].data();
-  } else {
+  if (!activeSession || activeSession.empty) {
     throw new Error('User does not have an active sleep session');
   }
 
@@ -132,7 +133,7 @@ export const stopSleepSession = async (
   const penalty = await AsyncStorage.getItem('sleepPenalty');
 
   // Update the sleep session document in Firestore
-  const docRef = doc(db, 'sleepSessions', sessionData?.id);
+  const docRef = doc(db, 'sleepSessions', activeSession.docs[0].id);
   await updateDoc(docRef, {
     endTime: serverTimestamp(),
     active: false,
