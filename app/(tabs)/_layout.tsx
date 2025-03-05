@@ -4,8 +4,18 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { TouchableOpacity } from 'react-native';
 import { COLORS } from '../../constants/theme';
+import { getAuth } from '@react-native-firebase/auth';
 
 export default function TabLayout() {
+  const handleLogout = async () => {
+    try {
+      await getAuth().signOut();
+      router.replace('/login'); 
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   return (
     <Tabs
       screenOptions={{
@@ -13,13 +23,18 @@ export default function TabLayout() {
         headerTitle: '',
         headerShadowVisible: false,
         headerLeft: () => (
-          <TouchableOpacity style={{ margin: 20 }} onPress={() => router.push({ pathname: '../login' })}>
-            <MaterialCommunityIcons name="logout" size={24} color="black" />
+          <TouchableOpacity style={{ margin: 20 }} onPress={() => handleLogout()}>
+            <MaterialCommunityIcons name="logout" size={24} color={COLORS.icon} />
           </TouchableOpacity>
         ),
-        // headerStyle: {
-        //   backgroundColor: COLORS.background,
-        // },
+        headerStyle: {
+          backgroundColor: COLORS.background,
+        },
+        tabBarStyle: {
+          backgroundColor: COLORS.tabBar,
+        },
+        tabBarActiveTintColor: COLORS.accent,
+        tabBarInactiveTintColor: COLORS.icon,
       }}
     >
       <Tabs.Screen

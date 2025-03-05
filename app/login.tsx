@@ -12,7 +12,7 @@ import {
   getFirestore,
   setDoc,
 } from '@react-native-firebase/firestore';
-import { COLORS } from '../constants/theme';
+import { COLORS } from '@/constants/theme';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 

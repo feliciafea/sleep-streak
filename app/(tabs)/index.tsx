@@ -4,6 +4,7 @@ import { getAuth, FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { useEffect, useState } from 'react';
 import SleepTracker from '../../components/SleepTracker';
 import { doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
+import { COLORS } from '@/constants/theme';
 
 export default function HomeScreen() {
   // Set an initializing state whilst Firebase connects
@@ -37,7 +38,7 @@ export default function HomeScreen() {
   if (initializing) return null;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#FFF' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.background }}>
       <View style={styles.container}>
         {user && (
           <>
@@ -56,16 +57,18 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
-    backgroundColor: '#FFF',
+    backgroundColor: COLORS.background,
     padding: 20,
   },
   headerText: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: COLORS.text,
   },
   streakText: {
     fontSize: 50,
     marginVertical: 10,
     fontWeight: 'bold',
+    color: COLORS.accent,
   },
 });
