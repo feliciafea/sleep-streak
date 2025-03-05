@@ -6,40 +6,62 @@ import {
 } from '@react-native-firebase/auth';
 import { useState } from 'react';
 import { router } from 'expo-router';
+import {
+  doc,
+  getDoc,
+  getFirestore,
+  setDoc,
+} from '@react-native-firebase/firestore';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPass] = useState('');
   const [logInError, setLogInError] = useState('');
 
-  const signIn = () => {
-    signInWithEmailAndPassword(getAuth(), email, password)
-      .then(() => {
-        console.log('logged in');
-        router.push({
-          pathname: '/(tabs)',
-          params: { email: email },
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        setLogInError(error.message);
+  const createFirestoreUser = async (userId: string) => {
+    const db = getFirestore();
+
+    // Check to see if user already exists
+    const docRef = doc(db, 'users', userId);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists) {
+      console.log('Creating user');
+      await setDoc(doc(db, 'users', userId), {
+        streak: 0,
       });
+    }
   };
 
-  const createAccount = () => {
-    createUserWithEmailAndPassword(getAuth(), email, password)
-      .then(() => {
-        console.log('signed in');
-        router.push({
-          pathname: '/(tabs)',
-          params: { email: email },
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-        setLogInError(error.message);
+  const signIn = async () => {
+    try {
+      const auth = await signInWithEmailAndPassword(getAuth(), email, password);
+      console.log('logged in');
+      await createFirestoreUser(auth.user.uid);
+      router.push({
+        pathname: '/(tabs)',
       });
+    } catch (e) {
+      console.log(e);
+      setLogInError((e as any).message);
+    }
+  };
+
+  const createAccount = async () => {
+    try {
+      const auth = await createUserWithEmailAndPassword(
+        getAuth(),
+        email,
+        password,
+      );
+      console.log('logged in');
+      await createFirestoreUser(auth.user.uid);
+      router.push({
+        pathname: '/(tabs)',
+      });
+    } catch (e) {
+      console.log(e);
+      setLogInError((e as any).message);
+    }
   };
 
   return (
