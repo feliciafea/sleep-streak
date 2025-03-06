@@ -115,12 +115,12 @@ export const updateSleepStreaks = onSchedule(
           }
 
           const userData = userDoc.data();
-          const currentStreak = userData?.sleepStreak || 0;
+          const currentStreak = userData?.streak || 0;
 
           if (totalSleepHours >= 7) {
             // User met sleep goal, increment streak
             await userRef.update({
-              sleepStreak: currentStreak + 1,
+              streak: currentStreak + 1,
               lastStreakUpdate: Timestamp.now(),
             });
             logger.info(
@@ -132,7 +132,7 @@ export const updateSleepStreaks = onSchedule(
             // User didn't meet sleep goal, reset streak
             if (currentStreak > 0) {
               await userRef.update({
-                sleepStreak: 0,
+                streak: 0,
                 lastStreakUpdate: Timestamp.now(),
               });
               logger.info(
