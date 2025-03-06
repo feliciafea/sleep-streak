@@ -3,14 +3,13 @@ import React from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { TouchableOpacity } from 'react-native';
-import { COLORS } from '../../constants/theme';
+import { COLORS } from '@/constants/theme';
 import { getAuth } from '@react-native-firebase/auth';
 
 export default function TabLayout() {
   const handleLogout = async () => {
     try {
       await getAuth().signOut();
-      router.replace('/login'); 
     } catch (error) {
       console.error('Error signing out:', error);
     }
