@@ -95,6 +95,11 @@ export const updateSleepStreaks = onSchedule(
               (session.endTime.getTime() - session.startTime.getTime()) /
               (1000 * 60);
             const penaltyMinutes = session.penalty * 15; // 15 minutes per penalty
+
+            logger.info(
+              `User ${userId}: Session from ${session.startTime} to ${session.endTime}, duration: ${durationMinutes} minutes, penalty: ${penaltyMinutes} minutes`,
+            );
+
             totalSleepMinutes += Math.max(0, durationMinutes - penaltyMinutes);
           });
 
