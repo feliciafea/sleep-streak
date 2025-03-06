@@ -6,6 +6,7 @@ import {
   stopSleepSession,
   getActiveSleepSession,
 } from '../utils/sleepTracking';
+import { COLORS } from '@/constants/theme';
 
 interface SleepTrackerProps {
   user: FirebaseAuthTypes.User;
@@ -99,15 +100,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 8,
     alignItems: 'center',
+    shadowColor: '#000',
   },
   startButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: COLORS.primary,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5, 
   },
   stopButton: {
     backgroundColor: '#F44336',
   },
   buttonText: {
-    color: 'white',
+    color: COLORS.text,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -117,6 +127,7 @@ const styles = StyleSheet.create({
   trackingText: {
     fontSize: 16,
     marginBottom: 15,
+    color: COLORS.text,
   },
 });
 
