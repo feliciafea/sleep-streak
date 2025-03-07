@@ -46,7 +46,7 @@ export const updateSleepStreaks = onSchedule(
       const sleepSessionsRef = db.collection('sleepSessions');
       const sessionsSnapshot = await sleepSessionsRef
         .where('active', '==', false)
-        .where('startTime', '>=', yesterdayStart)
+        .where('endTime', '>=', yesterdayStart)
         .where('endTime', '<=', yesterdayEnd_ts)
         .get();
 
