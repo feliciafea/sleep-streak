@@ -7,7 +7,7 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import { onRequest } from 'firebase-functions/v2/https';
+// import { onRequest } from 'firebase-functions/v2/https';
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import * as logger from 'firebase-functions/logger';
 import { getFirestore, Timestamp } from 'firebase-admin/firestore';
@@ -16,24 +16,14 @@ import { initializeApp } from 'firebase-admin/app';
 // Initialize Firebase Admin
 initializeApp();
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
-
-export const helloWorld = onRequest((request, response) => {
-  logger.info('Hello logs!', { structuredData: true });
-  response.send('Hello from Firebase!');
-});
-
 // Function to update sleep streaks daily at midnight EST
 export const updateSleepStreaks = onSchedule(
   {
     // Schedule for midnight EST (5am UTC)
     schedule: '0 5 * * *',
   },
-  async (event): Promise<void> => {
-    logger.info('Running updateSleepStreaks function', {
-      structuredData: true,
-    });
+  async (): Promise<void> => {
+    logger.info('Running updateSleepStreaks function');
 
     const db = getFirestore();
 
@@ -52,7 +42,7 @@ export const updateSleepStreaks = onSchedule(
         `Querying sleep sessions between ${yesterdayStart.toDate()} and ${yesterdayEnd_ts.toDate()}`,
       );
 
-      // Get all completed sleep sessions from yesterday
+      // Get all completed sleep sessions from day before
       const sleepSessionsRef = db.collection('sleepSessions');
       const sessionsSnapshot = await sleepSessionsRef
         .where('active', '==', false)
@@ -62,7 +52,6 @@ export const updateSleepStreaks = onSchedule(
 
       logger.info(`Found ${sessionsSnapshot.size} completed sleep sessions`);
 
-      // Group sessions by user
       const userSessions: {
         [key: string]: { startTime: Date; endTime: Date; penalty: number }[];
       } = {};
@@ -95,11 +84,6 @@ export const updateSleepStreaks = onSchedule(
               (session.endTime.getTime() - session.startTime.getTime()) /
               (1000 * 60);
             const penaltyMinutes = session.penalty * 15; // 15 minutes per penalty
-
-            logger.info(
-              `User ${userId}: Session from ${session.startTime} to ${session.endTime}, duration: ${durationMinutes} minutes, penalty: ${penaltyMinutes} minutes`,
-            );
-
             totalSleepMinutes += Math.max(0, durationMinutes - penaltyMinutes);
           });
 
