@@ -26,6 +26,11 @@ export default function TabLayout() {
             <MaterialCommunityIcons name="logout" size={24} color={COLORS.icon} />
           </TouchableOpacity>
         ),
+        headerRight: () => (
+          <TouchableOpacity style={{ margin: 20 }} onPress={() => router.push({ pathname: '/help' })}>
+            <MaterialCommunityIcons name="help" size={24} color={COLORS.icon} />
+          </TouchableOpacity>
+        ),
         headerStyle: {
           backgroundColor: COLORS.background,
         },
