@@ -22,12 +22,12 @@ export default function TabLayout() {
         headerTitle: '',
         headerShadowVisible: false,
         headerLeft: () => (
-          <TouchableOpacity style={{ margin: 20 }} onPress={() => handleLogout()}>
+          <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleLogout()}>
             <MaterialCommunityIcons name="logout" size={24} color={COLORS.icon} />
           </TouchableOpacity>
         ),
         headerRight: () => (
-          <TouchableOpacity style={{ margin: 20 }} onPress={() => router.push({ pathname: '/help' })}>
+          <TouchableOpacity style={{ marginRight: 20 }} onPress={() => router.push({ pathname: '/help' })}>
             <MaterialCommunityIcons name="help" size={24} color={COLORS.icon} />
           </TouchableOpacity>
         ),
