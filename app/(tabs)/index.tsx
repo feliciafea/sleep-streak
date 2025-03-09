@@ -1,4 +1,4 @@
-import { Text, StyleSheet, View } from 'react-native';
+import { Text, StyleSheet, View, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAuth, FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { useEffect, useState } from 'react';
@@ -52,13 +52,13 @@ export default function HomeScreen() {
               let penalties = doc.data().penalty
 
               //sleepTime and netTime is in minutes
-              let totalSleep = (end.getTime() - start.getTime()) / (1000 * 60 * 60)
+              let totalSleep = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60))
               list.push({
                 id: doc.id,
                 startTime: start,
                 endTime: end,
                 sleepTime: totalSleep,
-                netTime: totalSleep - 15 * penalties
+                netTime: Math.max(0, totalSleep - 15 * penalties)
               })
             }
           });
@@ -82,6 +82,18 @@ export default function HomeScreen() {
             <Text style={styles.headerText}>Sleep Streak</Text>
             <Text style={styles.streakText}>{streak}</Text>
             <SleepTracker user={user} />
+            <FlatList
+              data={sessions}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <View style={styles.sessionItem} >
+                  <Text style={styles.sessionText}>Start Time: {item.startTime.toLocaleString()}</Text>
+                  <Text style={styles.sessionText}>End Time: {item.endTime.toLocaleString()}</Text>
+                  <Text style={styles.sessionText}>TotalTime: {item.sleepTime}</Text>
+                  <Text style={styles.sessionText}>NetTime: {item.netTime}</Text>
+                </View>
+              )}
+            />
           </>
         )}
       </View>
@@ -108,4 +120,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.accent,
   },
+  sessionItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    margin: 10,
+    backgroundColor: COLORS.lightBackground,
+    padding: 10
+
+  },
+  sessionText: {
+    fontSize: 16,
+    marginBottom: 15,
+    color: COLORS.text,
+    fontWeight: 'bold',
+  }
 });
