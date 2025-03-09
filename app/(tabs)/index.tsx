@@ -1,9 +1,9 @@
-import { Text, StyleSheet, View, FlatList } from 'react-native';
+import { Text, StyleSheet, View, FlatList, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAuth, FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { useEffect, useState } from 'react';
 import SleepTracker from '../../components/SleepTracker';
-import { collection, doc, FirebaseFirestoreTypes, getDoc, getDocs, getFirestore, onSnapshot, query, where } from '@react-native-firebase/firestore';
+import { collection, doc, FirebaseFirestoreTypes, getDoc, getDocs, getFirestore, onSnapshot, orderBy, query, where } from '@react-native-firebase/firestore';
 import { COLORS } from '@/constants/theme';
 interface Session {
   id: string;
@@ -38,21 +38,21 @@ export default function HomeScreen() {
     };
     const getHistory = async (user: FirebaseAuthTypes.User) => {
       const db = getFirestore();
-      onSnapshot(query(collection(db, "sleepSessions"), where("userID", "==", user.uid)),
+      onSnapshot(query(collection(db, "sleepSessions"), where("userID", "==", user.uid), orderBy('endTime', 'desc')),
         (querySnapShot) => {
           const list: Session[] = [];
-          console.log(querySnapShot, user.uid)
-          if (querySnapShot.empty) {
+          if (!querySnapShot || querySnapShot.empty) {
             return;
           }
           querySnapShot.forEach(doc => {
-            if (!doc.data().active) {
+            if (!doc.data().active && doc.data().endTime) {
               let start = doc.data().startTime.toDate()
               let end = doc.data().endTime.toDate()
               let penalties = doc.data().penalty
 
               //sleepTime and netTime is in minutes
-              let totalSleep = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60))
+              let totalSleep = Math.round((end.getTime() - start.getTime()) / (1000 * 60))
+
               list.push({
                 id: doc.id,
                 startTime: start,
@@ -82,13 +82,14 @@ export default function HomeScreen() {
             <Text style={styles.headerText}>Sleep Streak</Text>
             <Text style={styles.streakText}>{streak}</Text>
             <SleepTracker user={user} />
+            <Text style={styles.sessionTitle}>Sleep History</Text>
             <FlatList
               data={sessions}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <View style={styles.sessionItem} >
-                  <Text style={styles.sessionText}>Start Time: {item.startTime.toLocaleString()}</Text>
-                  <Text style={styles.sessionText}>End Time: {item.endTime.toLocaleString()}</Text>
+                  <Text style={styles.sessionText}>Start Time: {item.startTime.toLocaleString()} minutes</Text>
+                  <Text style={styles.sessionText}>End Time: {item.endTime.toLocaleString()} minutes</Text>
                   <Text style={styles.sessionText}>TotalTime: {item.sleepTime}</Text>
                   <Text style={styles.sessionText}>NetTime: {item.netTime}</Text>
                 </View>
@@ -119,6 +120,12 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     fontWeight: 'bold',
     color: COLORS.accent,
+  },
+  sessionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: COLORS.text,
+    marginTop: 10
   },
   sessionItem: {
     display: 'flex',
