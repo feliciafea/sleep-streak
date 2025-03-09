@@ -88,10 +88,10 @@ export default function HomeScreen() {
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <View style={styles.sessionItem} >
-                  <Text style={styles.sessionText}>Start Time: {item.startTime.toLocaleString()} minutes</Text>
-                  <Text style={styles.sessionText}>End Time: {item.endTime.toLocaleString()} minutes</Text>
-                  <Text style={styles.sessionText}>TotalTime: {item.sleepTime}</Text>
-                  <Text style={styles.sessionText}>NetTime: {item.netTime}</Text>
+                  <Text style={styles.sessionText}>Start Time: {item.startTime.toLocaleString()}</Text>
+                  <Text style={styles.sessionText}>End Time: {item.endTime.toLocaleString()}</Text>
+                  <Text style={styles.sessionText}>TotalTime: {item.sleepTime} minutes</Text>
+                  <Text style={styles.sessionText}>NetTime: {item.netTime} minutes</Text>
                 </View>
               )}
             />
