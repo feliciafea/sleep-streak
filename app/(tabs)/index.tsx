@@ -45,9 +45,11 @@ export default function HomeScreen() {
             return;
           }
           querySnapShot.forEach(doc => {
-            if (!doc.data().active && doc.data().endTime) {
+            if (!doc.data().active) {
               let start = doc.data().startTime.toDate()
-              let end = doc.data().endTime.toDate()
+              let end = doc.data().endTime != null
+                ? doc.data().endTime.toDate() : new Date()
+
               let penalties = doc.data().penalty
 
               //sleepTime and netTime is in minutes
@@ -90,8 +92,8 @@ export default function HomeScreen() {
                 <View style={styles.sessionItem} >
                   <Text style={styles.sessionText}>Start Time: {item.startTime.toLocaleString()}</Text>
                   <Text style={styles.sessionText}>End Time: {item.endTime.toLocaleString()}</Text>
-                  <Text style={styles.sessionText}>TotalTime: {item.sleepTime} minutes</Text>
-                  <Text style={styles.sessionText}>NetTime: {item.netTime} minutes</Text>
+                  <Text style={styles.sessionText}>TotalTime: {Math.round(item.sleepTime / 60)} hrs {item.sleepTime % 60} mins</Text>
+                  <Text style={styles.sessionText}>NetTime: {Math.round(item.netTime / 60)} hrs {item.netTime % 60} mins</Text>
                 </View>
               )}
             />
