@@ -3,13 +3,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAuth, FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { useEffect, useState } from 'react';
 import SleepTracker from '../../components/SleepTracker';
-import { doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
+import { collection, doc, FirebaseFirestoreTypes, getDoc, getDocs, getFirestore, onSnapshot, query, where } from '@react-native-firebase/firestore';
 import { COLORS } from '@/constants/theme';
-
+interface Session {
+  id: string;
+  startTime: number,
+  endTime: number,
+  sleepTime: number;
+  netTime: number;
+}
 export default function HomeScreen() {
   // Set an initializing state whilst Firebase connects
   const [initializing, setInitializing] = useState<boolean>(true);
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+  const [sessions, setSessions] = useState<Session[]>([]);
   const [streak, setStreak] = useState<number>(0);
 
   function onAuthStateChanged(user: FirebaseAuthTypes.User | null) {
@@ -29,9 +36,39 @@ export default function HomeScreen() {
       console.log(userStreak.data());
       setStreak(userStreak.data()?.streak);
     };
+    const getHistory = async (user: FirebaseAuthTypes.User) => {
+      const db = getFirestore();
+      onSnapshot(query(collection(db, "sleepSessions"), where("userID", "==", user.uid)),
+        (querySnapShot) => {
+          const list: Session[] = [];
+          console.log(querySnapShot, user.uid)
+          if (querySnapShot.empty) {
+            return;
+          }
+          querySnapShot.forEach(doc => {
+            if (!doc.data().active) {
+              let start = doc.data().startTime.toDate()
+              let end = doc.data().endTime.toDate()
+              let penalties = doc.data().penalty
+
+              //sleepTime and netTime is in minutes
+              let totalSleep = (end.getTime() - start.getTime()) / (1000 * 60 * 60)
+              list.push({
+                id: doc.id,
+                startTime: start,
+                endTime: end,
+                sleepTime: totalSleep,
+                netTime: totalSleep - 15 * penalties
+              })
+            }
+          });
+          setSessions(list);
+        });
+    };
 
     if (user) {
       getUserStreak(user);
+      getHistory(user)
     }
   }, [user]);
 
