@@ -90,8 +90,8 @@ export default function HomeScreen() {
                 <View style={styles.sessionItem} >
                   <Text style={styles.sessionText}>Start Time: {item.startTime.toLocaleString()}</Text>
                   <Text style={styles.sessionText}>End Time: {item.endTime.toLocaleString()}</Text>
-                  <Text style={styles.sessionText}>TotalTime: {Math.round(item.sleepTime / 60)} hrs {item.sleepTime % 60} mins</Text>
-                  <Text style={styles.sessionText}>NetTime: {Math.round(item.netTime / 60)} hrs {item.netTime % 60} mins</Text>
+                  <Text style={styles.sessionText}>TotalTime: {Math.floor(item.sleepTime / 60)} hrs {item.sleepTime % 60} mins</Text>
+                  <Text style={styles.sessionText}>NetTime: {Math.floor(item.netTime / 60)} hrs {item.netTime % 60} mins</Text>
                 </View>
               )}
             />
