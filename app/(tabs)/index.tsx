@@ -45,11 +45,9 @@ export default function HomeScreen() {
             return;
           }
           querySnapShot.forEach(doc => {
-            if (!doc.data().active) {
+            if (!doc.data().active && doc.data().endTime) {
               let start = doc.data().startTime.toDate()
-              let end = doc.data().endTime != null
-                ? doc.data().endTime.toDate() : new Date()
-
+              let end = doc.data().endTime.toDate()
               let penalties = doc.data().penalty
 
               //sleepTime and netTime is in minutes
