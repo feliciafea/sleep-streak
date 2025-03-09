@@ -1,11 +1,17 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '@/constants/theme';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { router } from 'expo-router';
 
 export default function HelpScreen() {
   return (
     <SafeAreaView style={styles.container}>
+      
       <SafeAreaView style={styles.titleContainer}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()} >
+          <MaterialIcons name="arrow-back" size={24} color={COLORS.icon} />
+        </TouchableOpacity>
         <Text style={styles.title}>How do I use SleepStreak? </Text>
       </SafeAreaView>
       <View style={styles.listContainer}>
@@ -43,9 +49,11 @@ const styles = StyleSheet.create({
     titleContainer: {
       alignItems: 'flex-start',
       marginBottom: 20,
+      flexDirection: 'row',
+      
     },
     title: {
-      fontSize: 23,
+      fontSize: 22,
       fontWeight: 'bold',
       color: COLORS.accent,
     },
@@ -65,4 +73,10 @@ const styles = StyleSheet.create({
       marginRight: 8,
       fontWeight: 'bold',
     },
+    backButton: {
+      marginLeft: 0,
+      marginRight: 10,
+      marginVertical: 5,
+    }
+
 });
