@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "402325774920",
+    "project_id": "sleep-streak-ecbcc",
+    "storage_bucket": "sleep-streak-ecbcc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:402325774920:android:6165728d2405ea85f7ee7d",
+        "android_client_info": {
+          "package_name": "com.sleeperagents.sleepstreak"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "402325774920-79p509ol0v0rpqdg3icgc1ooaghqr23s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sleeperagents.sleepstreak",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "402325774920-qtkbui3ekj2geoq7hoc3lq8v3if97evv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3XFK7Kxs_i0k3Y6h3Zdn6TJE0AxjuBl0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "402325774920-qtkbui3ekj2geoq7hoc3lq8v3if97evv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "402325774920-egng6do96qehd133sd59fvrn24celi7a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sleeperagents.sleepstreak"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
