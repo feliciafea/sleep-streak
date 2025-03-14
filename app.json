@@ -8,15 +8,17 @@
     "scheme": "sleepstreak",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "backgroundColor": "#30354D",
     "ios": {
       "supportsTablet": true,
       "googleServicesFile": "./GoogleService-Info.plist",
-      "bundleIdentifier": "com.sleeperagents.sleepstreak"
+      "bundleIdentifier": "com.sleeperagents.sleepstreak",
+      "icon": "./assets/images/logo-sleep-streak.png"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/android-logo.png",
+        "backgroundColor": "#30354D"
       },
       "googleServicesFile": "./google-services.json",
       "package": "com.sleeperagents.sleepstreak"
@@ -47,10 +49,10 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/logo-sleep-streak.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#30354D"
         }
       ]
     ],
