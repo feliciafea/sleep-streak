@@ -1,9 +1,6 @@
-import { Text, View, StyleSheet, TextInput, Button, TouchableOpacity } from 'react-native';
-import {
-  createUserWithEmailAndPassword,
-  getAuth,
-  signInWithEmailAndPassword,
-} from '@react-native-firebase/auth';
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+
+import auth from '@react-native-firebase/auth';
 import { useState } from 'react';
 import { router } from 'expo-router';
 import {
@@ -14,7 +11,11 @@ import {
 } from '@react-native-firebase/firestore';
 import { COLORS } from '@/constants/theme';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
+GoogleSignin.configure({
+  webClientId: '402325774920-qtkbui3ekj2geoq7hoc3lq8v3if97evv.apps.googleusercontent.com',
+});
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -35,32 +36,34 @@ export default function Login() {
     }
   };
 
-  const signIn = async () => {
+  const googleSignIn = async () => {
     try {
-      const auth = await signInWithEmailAndPassword(getAuth(), email, password);
-      console.log('logged in');
-      await createFirestoreUser(auth.user.uid);
-      router.push({
-        pathname: '/(tabs)',
-      });
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      const signInResult = await GoogleSignin.signIn();
+
+      if (signInResult.data) {
+        const googleCredential = auth.GoogleAuthProvider.credential(signInResult.data.idToken);
+        await auth().signInWithCredential(googleCredential);
+        console.log(googleCredential);
+        const userId = auth().currentUser?.uid;
+        return userId;
+      } else { console.log('No sign in data') }
     } catch (e) {
       console.log(e);
       setLogInError((e as any).message);
     }
   };
 
-  const createAccount = async () => {
+  const authenticate = async () => {
     try {
-      const auth = await createUserWithEmailAndPassword(
-        getAuth(),
-        email,
-        password,
-      );
-      console.log('logged in');
-      await createFirestoreUser(auth.user.uid);
-      router.push({
-        pathname: '/(tabs)',
-      });
+      const userId = await googleSignIn();
+      if (userId) {
+        await createFirestoreUser(userId);
+        router.push({pathname: '/(tabs)'});
+      } else {
+        setLogInError('Failed to get user ID');
+      }
+      console.log('Log in User ID:', userId);
     } catch (e) {
       console.log(e);
       setLogInError((e as any).message);
@@ -78,29 +81,13 @@ export default function Login() {
         />
         <Text style={styles.title}>SleepStreak</Text>
       </View>
-      <TextInput
-        value={email}
-        style={styles.textInput}
-        placeholder="email"
-        onChangeText={(text) => setEmail(text)}
-      ></TextInput>
-      <TextInput
-        value={password}
-        secureTextEntry={true}
-        style={styles.textInput}
-        placeholder="password"
-        onChangeText={(text) => setPass(text)}
-      ></TextInput>
-
-      <TouchableOpacity style={styles.logInButton} onPress={signIn}>
-        <Text style={styles.text}>Log in</Text>
+      <TouchableOpacity style={styles.logInButton} onPress={authenticate}>
+          <View style={styles.buttonContent}>
+            <MaterialCommunityIcons name="google" size={24} color={COLORS.text} />
+            <Text style={[styles.text, styles.signUpButtonText]}>Log in with Google</Text>
+          </View>
       </TouchableOpacity>
-      <View style={styles.signupContainer}>
-        <Text style={styles.text}>Don't have an account? </Text>
-        <TouchableOpacity onPress={createAccount}>
-          <Text style={[styles.text, styles.signupText]}>Sign up</Text>
-        </TouchableOpacity>
-      </View>
+
       {logInError ? <Text style={
         [styles.text, { color: COLORS.error }]
       }>{logInError}</Text> : null}
@@ -109,17 +96,6 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-  textInput: {
-    marginVertical: 4,
-    height: 50,
-    width: 250,
-    borderWidth: 1,
-    borderRadius: 8,
-    borderColor: COLORS.text,
-    padding: 10,
-    margin: 10,
-    backgroundColor: COLORS.lightBackground,
-  },
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
@@ -139,16 +115,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     margin: 10,
   },
-  signupContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  signupText: {
-    color: COLORS.accent,
-    fontWeight: '600',
-    padding: 0,  
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -161,5 +127,10 @@ const styles = StyleSheet.create({
   titleContainer: {
     alignItems: 'center',
     padding: 30,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

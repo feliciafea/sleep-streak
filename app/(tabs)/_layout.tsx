@@ -5,11 +5,17 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { TouchableOpacity } from 'react-native';
 import { COLORS } from '@/constants/theme';
 import { getAuth } from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
+GoogleSignin.configure({
+  webClientId: '402325774920-qtkbui3ekj2geoq7hoc3lq8v3if97evv.apps.googleusercontent.com',
+});
 
 export default function TabLayout() {
   const handleLogout = async () => {
     try {
       await getAuth().signOut();
+      await GoogleSignin.signOut();
     } catch (error) {
       console.error('Error signing out:', error);
     }
