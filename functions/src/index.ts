@@ -71,10 +71,34 @@ export const updateSleepStreaks = onSchedule(
         });
       });
 
-      // Process each user's sleep data
-      for (const userId in userSessions) {
+      // Process each user's streak
+      const usersRef = db.collection('users');
+      const usersSnapshot = (await usersRef.get()).docs;
+      logger.info(`Found ${usersSnapshot.length} users`);
+
+      if (usersSnapshot.length === 0) {
+        logger.warn('No users found in the database');
+        return;
+      }
+
+      // Iterate through each user
+      for (const userDoc of usersSnapshot) {
+        const userId = userDoc.id;
+
         try {
           const sessions = userSessions[userId];
+
+          if (!sessions) {
+            logger.info(
+              `No sleep sessions found for user ${userId}. Their streak will be reset.`,
+            );
+            userDoc.ref.update({
+              streak: 0,
+              lastStreakUpdate: Timestamp.now(),
+            });
+
+            continue;
+          }
 
           // Calculate total sleep time in minutes after applying penalties
           let totalSleepMinutes = 0;
@@ -94,10 +118,6 @@ export const updateSleepStreaks = onSchedule(
             )} hours`,
           );
 
-          // Update user's streak if they slept at least 7 hours
-          const userRef = db.collection('users').doc(userId);
-          const userDoc = await userRef.get();
-
           if (!userDoc.exists) {
             logger.warn(`No user document found for ID: ${userId}`);
             continue;
@@ -108,7 +128,7 @@ export const updateSleepStreaks = onSchedule(
 
           if (totalSleepHours >= 7) {
             // User met sleep goal, increment streak
-            await userRef.update({
+            await userDoc.ref.update({
               streak: currentStreak + 1,
               lastStreakUpdate: Timestamp.now(),
             });
@@ -120,7 +140,7 @@ export const updateSleepStreaks = onSchedule(
           } else {
             // User didn't meet sleep goal, reset streak
             if (currentStreak > 0) {
-              await userRef.update({
+              await userDoc.ref.update({
                 streak: 0,
                 lastStreakUpdate: Timestamp.now(),
               });
