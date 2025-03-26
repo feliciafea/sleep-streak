@@ -3,12 +3,21 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAuth, FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { useEffect, useState } from 'react';
 import SleepTracker from '../../components/SleepTracker';
-import { collection, doc, FirebaseFirestoreTypes, getDoc, getDocs, getFirestore, onSnapshot, orderBy, query, where } from '@react-native-firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getFirestore,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from '@react-native-firebase/firestore';
 import { COLORS } from '@/constants/theme';
 interface Session {
   id: string;
-  startTime: number,
-  endTime: number,
+  startTime: number;
+  endTime: number;
   sleepTime: number;
   netTime: number;
 }
@@ -30,45 +39,58 @@ export default function HomeScreen() {
   }, []);
 
   useEffect(() => {
-    const getUserStreak = async (user: FirebaseAuthTypes.User) => {
+    const getUserStreak = (user: FirebaseAuthTypes.User) => {
       const db = getFirestore();
-      const userStreak = await getDoc(doc(db, 'users', user.uid));
-      console.log(userStreak.data());
-      setStreak(userStreak.data()?.streak);
+      const userDocRef = doc(db, 'users', user.uid);
+      onSnapshot(userDocRef, (docSnap) => {
+        if (docSnap?.exists) {
+          console.log(docSnap.data());
+          setStreak(docSnap.data()?.streak);
+        }
+      });
     };
+
     const getHistory = async (user: FirebaseAuthTypes.User) => {
       const db = getFirestore();
-      onSnapshot(query(collection(db, "sleepSessions"), where("userID", "==", user.uid), orderBy('endTime', 'desc')),
+      onSnapshot(
+        query(
+          collection(db, 'sleepSessions'),
+          where('userID', '==', user.uid),
+          orderBy('endTime', 'desc'),
+        ),
         (querySnapShot) => {
           const list: Session[] = [];
           if (!querySnapShot || querySnapShot.empty) {
             return;
           }
-          querySnapShot.forEach(doc => {
+          querySnapShot.forEach((doc) => {
             if (!doc.data().active && doc.data().endTime) {
-              let start = doc.data().startTime.toDate()
-              let end = doc.data().endTime.toDate()
-              let penalties = doc.data().penalty
+              let start = doc.data().startTime.toDate();
+              let end = doc.data().endTime.toDate();
+              let penalties = doc.data().penalty;
 
               //sleepTime and netTime is in minutes
-              let totalSleep = Math.round((end.getTime() - start.getTime()) / (1000 * 60))
+              let totalSleep = Math.round(
+                (end.getTime() - start.getTime()) / (1000 * 60),
+              );
 
               list.push({
                 id: doc.id,
                 startTime: start,
                 endTime: end,
                 sleepTime: totalSleep,
-                netTime: Math.max(0, totalSleep - 15 * penalties)
-              })
+                netTime: Math.max(0, totalSleep - 15 * penalties),
+              });
             }
           });
           setSessions(list);
-        });
+        },
+      );
     };
 
     if (user) {
       getUserStreak(user);
-      getHistory(user)
+      getHistory(user);
     }
   }, [user]);
 
@@ -87,11 +109,21 @@ export default function HomeScreen() {
               data={sessions}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
-                <View style={styles.sessionItem} >
-                  <Text style={styles.sessionText}>Start Time: {item.startTime.toLocaleString()}</Text>
-                  <Text style={styles.sessionText}>End Time: {item.endTime.toLocaleString()}</Text>
-                  <Text style={styles.sessionText}>TotalTime: {Math.floor(item.sleepTime / 60)} hrs {item.sleepTime % 60} mins</Text>
-                  <Text style={styles.sessionText}>NetTime: {Math.floor(item.netTime / 60)} hrs {item.netTime % 60} mins</Text>
+                <View style={styles.sessionItem}>
+                  <Text style={styles.sessionText}>
+                    Start Time: {item.startTime.toLocaleString()}
+                  </Text>
+                  <Text style={styles.sessionText}>
+                    End Time: {item.endTime.toLocaleString()}
+                  </Text>
+                  <Text style={styles.sessionText}>
+                    TotalTime: {Math.floor(item.sleepTime / 60)} hrs{' '}
+                    {item.sleepTime % 60} mins
+                  </Text>
+                  <Text style={styles.sessionText}>
+                    NetTime: {Math.floor(item.netTime / 60)} hrs{' '}
+                    {item.netTime % 60} mins
+                  </Text>
                 </View>
               )}
             />
@@ -125,7 +157,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: COLORS.text,
-    marginTop: 10
+    marginTop: 10,
   },
   sessionItem: {
     display: 'flex',
@@ -133,13 +165,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     margin: 10,
     backgroundColor: COLORS.lightBackground,
-    padding: 10
-
+    padding: 10,
   },
   sessionText: {
     fontSize: 16,
     marginBottom: 15,
     color: COLORS.text,
     fontWeight: 'bold',
-  }
+  },
 });

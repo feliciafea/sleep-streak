@@ -1,4 +1,4 @@
-import { router, Tabs } from 'expo-router';
+import { useRouter, Tabs } from 'expo-router';
 import React from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -8,10 +8,13 @@ import { getAuth } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 GoogleSignin.configure({
-  webClientId: '402325774920-qtkbui3ekj2geoq7hoc3lq8v3if97evv.apps.googleusercontent.com',
+  webClientId:
+    '402325774920-qtkbui3ekj2geoq7hoc3lq8v3if97evv.apps.googleusercontent.com',
 });
 
 export default function TabLayout() {
+  const router = useRouter();
+
   const handleLogout = async () => {
     try {
       await getAuth().signOut();
@@ -28,12 +31,22 @@ export default function TabLayout() {
         headerTitle: '',
         headerShadowVisible: false,
         headerLeft: () => (
-          <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => handleLogout()}>
-            <MaterialCommunityIcons name="logout" size={24} color={COLORS.icon} />
+          <TouchableOpacity
+            style={{ marginLeft: 20 }}
+            onPress={() => handleLogout()}
+          >
+            <MaterialCommunityIcons
+              name="logout"
+              size={24}
+              color={COLORS.icon}
+            />
           </TouchableOpacity>
         ),
         headerRight: () => (
-          <TouchableOpacity style={{ marginRight: 20 }} onPress={() => router.push({ pathname: '/help' })}>
+          <TouchableOpacity
+            style={{ marginRight: 20 }}
+            onPress={() => router.push('/help')}
+          >
             <MaterialCommunityIcons name="help" size={24} color={COLORS.icon} />
           </TouchableOpacity>
         ),
