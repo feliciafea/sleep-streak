@@ -1,7 +1,7 @@
 import { useRouter, Tabs } from 'expo-router';
 import React from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { TouchableOpacity } from 'react-native';
 import { COLORS } from '@/constants/theme';
 import { getAuth } from '@react-native-firebase/auth';
@@ -74,11 +74,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="leaderboard"
+        name="friends"
         options={{
-          title: 'Leaderboard',
+          title: 'Friends',
           tabBarIcon: ({ color }) => (
-            <MaterialIcons name="leaderboard" size={24} color={color} />
+            <FontAwesome5 name="user-friends" size={24} color={color} />
           ),
         }}
       />

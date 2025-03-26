@@ -6,7 +6,6 @@ import SleepTracker from '../../components/SleepTracker';
 import {
   collection,
   doc,
-  getDoc,
   getFirestore,
   onSnapshot,
   orderBy,
@@ -14,6 +13,7 @@ import {
   where,
 } from '@react-native-firebase/firestore';
 import { COLORS } from '@/constants/theme';
+
 interface Session {
   id: string;
   startTime: number;
@@ -21,6 +21,7 @@ interface Session {
   sleepTime: number;
   netTime: number;
 }
+
 export default function HomeScreen() {
   // Set an initializing state whilst Firebase connects
   const [initializing, setInitializing] = useState<boolean>(true);
