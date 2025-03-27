@@ -21,7 +21,7 @@ GoogleSignin.configure({
 export default function Login() {
   const [logInError, setLogInError] = useState('');
 
-  const createFirestoreUser = async (userId: string) => {
+  const createFirestoreUser = async (userId: string, email: string) => {
     const db = getFirestore();
 
     // Check to see if user already exists
@@ -31,6 +31,7 @@ export default function Login() {
       console.log('Creating user');
       await setDoc(doc(db, 'users', userId), {
         streak: 0,
+        email: email,
       });
     }
   };
@@ -47,28 +48,30 @@ export default function Login() {
           signInResult.data.idToken,
         );
         await auth().signInWithCredential(googleCredential);
-        console.log(googleCredential);
+
         const userId = auth().currentUser?.uid;
-        return userId;
+        const userEmail = auth().currentUser?.email || '';
+        return { userId, userEmail };
       } else {
         console.log('No sign in data');
+        return null;
       }
     } catch (e) {
       console.log(e);
       setLogInError((e as any).message);
+      return null;
     }
   };
 
   const authenticate = async () => {
     try {
-      const userId = await googleSignIn();
-      if (userId) {
-        await createFirestoreUser(userId);
+      const userInfo = await googleSignIn();
+      if (userInfo && userInfo.userId) {
+        await createFirestoreUser(userInfo.userId, userInfo.userEmail);
         router.push({ pathname: '/(tabs)' });
       } else {
         setLogInError('Failed to get user ID');
       }
-      console.log('Log in User ID:', userId);
     } catch (e) {
       console.log(e);
       setLogInError((e as any).message);
