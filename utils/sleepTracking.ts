@@ -18,6 +18,7 @@ import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 import { DeviceMotion } from 'expo-sensors';
 import delay from './delay';
+import GoogleFit, { Scopes } from 'react-native-google-fit';
 
 // Sleep Tracking Task that runs every 15 minutes and checks for movement
 // If movement is detected, it increases the penalty by 1
@@ -76,6 +77,55 @@ TaskManager.defineTask('SLEEP_TRACKING_TASK', async () => {
   return BackgroundFetch.BackgroundFetchResult.NewData;
 });
 
+export const authorizeGoogleFit = async () => {
+  const options = {
+    scopes: [
+      Scopes.FITNESS_SLEEP_READ,
+    ]
+  };
+
+  try {
+    const authorized = await GoogleFit.authorize(options);
+    if (authorized) {
+      console.log('Sleep data: Authorization successful!');
+      return true;
+    }
+  } catch (error) {
+    console.log('Sleep data authorization error:', error);
+    return false;
+  }
+};
+
+export const getSleepData = async (startDate: Date, endDate: Date) => {
+  const options = {
+    startDate: startDate.toISOString(),
+    endDate: endDate.toISOString(),
+  };
+  try {
+    const sleepData = await GoogleFit.getSleepSamples(options, true);
+    // console.log('Sleep data sleep samples:', sleepData);
+    var totalSleep = 0;
+    if (sleepData && sleepData.length > 0) {
+      sleepData.forEach(sample => {
+        const startTime = new Date(sample.startDate);
+        const endTime = new Date(sample.endDate);
+        const durationInMinutes = Math.round((endTime.getTime() - startTime.getTime()) / (1000 * 60));
+        totalSleep += durationInMinutes
+        // console.log('Sleep Session:');
+        // console.log(`Start: ${startTime.toLocaleString()}`);
+        // console.log(`End: ${endTime.toLocaleString()}`);
+        // console.log(`Duration: ${durationInMinutes} minutes`);
+        // console.log('------------------------');
+      });
+      console.log(`Total Sleep: ${totalSleep} minutes`);
+    }
+    return totalSleep;
+  } catch (error) {
+    console.log('Sleep data error getting sleep samples:', error);
+    return null;
+  }
+};
+
 export const startSleepSession = async (
   userID: string,
 ): Promise<FirebaseFirestoreTypes.DocumentSnapshot | null> => {
@@ -128,16 +178,25 @@ export const stopSleepSession = async (
   if (!activeSession || activeSession.empty) {
     throw new Error('User does not have an active sleep session');
   }
+  
 
   const db = getFirestore();
   const penalty = await AsyncStorage.getItem('sleepPenalty');
+  const sessionData = activeSession.docs[0].data();
+  const startTime = sessionData.startTime.toDate();
+  const endTime = new Date();
+  const totalMinutes = Math.round((endTime.getTime() - startTime.getTime()) / (1000 * 60))
+  const netMinutes = Math.max(0, totalMinutes - (Number(penalty) * 15));
 
   // Update the sleep session document in Firestore
   const docRef = doc(db, 'sleepSessions', activeSession.docs[0].id);
+
   await updateDoc(docRef, {
     endTime: serverTimestamp(),
     active: false,
     penalty: Number(penalty),
+    totalSleep: totalMinutes,
+    netTime: netMinutes,
   });
 
   // Clear the penalty from AsyncStorage and return the session data

@@ -1,10 +1,13 @@
-import { Text, StyleSheet, View, FlatList, ScrollView } from 'react-native';
+import { Text, StyleSheet, View, FlatList, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAuth, FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { useEffect, useState } from 'react';
 import SleepTracker from '../../components/SleepTracker';
 import { collection, doc, FirebaseFirestoreTypes, getDoc, getDocs, getFirestore, onSnapshot, orderBy, query, where } from '@react-native-firebase/firestore';
 import { COLORS } from '@/constants/theme';
+// import { useLocalSearchParams } from 'expo-router';
+
+
 interface Session {
   id: string;
   startTime: number,
@@ -18,6 +21,7 @@ export default function HomeScreen() {
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [streak, setStreak] = useState<number>(0);
+  // const [googleFitAuth, setGoogleFitAuth] = useState<boolean>(false);
 
   function onAuthStateChanged(user: FirebaseAuthTypes.User | null) {
     setUser(user);
@@ -28,6 +32,13 @@ export default function HomeScreen() {
     const subscriber = getAuth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
+
+  // const params = useLocalSearchParams();
+  // useEffect(() => {
+  //   if (params.googleFitAuth) {
+  //     setGoogleFitAuth(params.googleFitAuth === 'true');
+  //   }
+  // }, [params.googleFitAuth]);
 
   useEffect(() => {
     const getUserStreak = async (user: FirebaseAuthTypes.User) => {
@@ -49,10 +60,10 @@ export default function HomeScreen() {
               let start = doc.data().startTime.toDate()
               let end = doc.data().endTime.toDate()
               let penalties = doc.data().penalty
+              let netTime = doc.data().netTime
+              let totalSleep = doc.data().totalSleep
 
               //sleepTime and netTime is in minutes
-              let totalSleep = Math.round((end.getTime() - start.getTime()) / (1000 * 60))
-
               list.push({
                 id: doc.id,
                 startTime: start,

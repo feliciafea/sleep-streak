@@ -2,14 +2,54 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '@/constants/theme';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
+import {
+  authorizeGoogleFit,
+} from '../utils/sleepTracking';
+import { getFirestore, doc, updateDoc, serverTimestamp } from '@react-native-firebase/firestore';
+import { useState } from 'react';
+
 
 export default function HelpScreen() {
+  const params = useLocalSearchParams();
+  const userId = params.userId as string;
+  const [googleFitAuth, setGoogleFitAuth] = useState<boolean>(false);
+
+  
+  const authGoogleFit = async () => {
+    try {
+      const auth = await authorizeGoogleFit();
+      setGoogleFitAuth(auth ?? false);
+
+      if (auth && userId) {
+        // Update Firestore user document
+        const db = getFirestore();
+        const userRef = doc(db, 'users', userId);
+        await updateDoc(userRef, {
+          googleFitAuth: true,
+          updatedAt: serverTimestamp()
+        });
+        console.log('Updated user Google Fit auth status');
+      }
+    } catch (error) {
+      console.error('Error updating Google Fit auth status:', error);
+    }
+
+  }
+  const handleBack = () => {
+    router.push({
+      pathname: '/(tabs)',
+      params: {
+        googleFitAuth: googleFitAuth.toString()
+      }
+    });
+  };
+   
   return (
     <SafeAreaView style={styles.container}>
       
       <SafeAreaView style={styles.titleContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()} >
+        <TouchableOpacity style={styles.backButton} onPress={handleBack} >
           <MaterialIcons name="arrow-back" size={24} color={COLORS.icon} />
         </TouchableOpacity>
         <Text style={styles.title}>How do I use SleepStreak? </Text>
@@ -34,6 +74,12 @@ export default function HelpScreen() {
           <Text style={styles.text}>The sleep streak counter updates daily, counting the number of consequtive nights you got 7+ hours of sleep!  </Text>
         </View>
       </View>
+      <TouchableOpacity 
+        onPress={authGoogleFit}
+        style={styles.authButton}
+      >
+        <Text style={styles.text}>Auth sleep data</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -77,6 +123,13 @@ const styles = StyleSheet.create({
       marginLeft: 0,
       marginRight: 10,
       marginVertical: 5,
+    },
+    authButton: {
+      backgroundColor: COLORS.accent,
+      padding: 10,
+      borderRadius: 8,
+      margin: 10,
     }
+
 
 });

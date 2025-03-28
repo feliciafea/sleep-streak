@@ -5,11 +5,14 @@ import {
   startSleepSession,
   stopSleepSession,
   getActiveSleepSession,
+  authorizeGoogleFit,
+  getSleepData
 } from '../utils/sleepTracking';
 import { COLORS } from '@/constants/theme';
 
 interface SleepTrackerProps {
   user: FirebaseAuthTypes.User;
+  // googleFitAuth : boolean;
 }
 
 const SleepTracker: React.FC<SleepTrackerProps> = ({ user }) => {
