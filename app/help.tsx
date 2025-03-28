@@ -106,7 +106,7 @@ export default function HelpScreen() {
         <Text style={styles.title}>Other tracking options: </Text>
       </SafeAreaView>
       <View style={styles.switchContainer}>
-        <Text style={styles.switchText}>Connect with Google Fit</Text>
+        <Text style={styles.switchText}>Use Google Fit (Android Only) </Text>
         <Switch
           trackColor={{ false: COLORS.tabBar, true: COLORS.accent }}
           thumbColor={COLORS.text}
@@ -170,8 +170,9 @@ const styles = StyleSheet.create({
     },
     switchText: {
       color: COLORS.text,
-      fontSize: 16,
+      fontSize: 15,
       fontWeight: '500',
+      paddingRight: 8,
     },
 
 
