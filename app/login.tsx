@@ -14,15 +14,14 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 GoogleSignin.configure({
-  webClientId: '402325774920-qtkbui3ekj2geoq7hoc3lq8v3if97evv.apps.googleusercontent.com',
+  webClientId:
+    '402325774920-qtkbui3ekj2geoq7hoc3lq8v3if97evv.apps.googleusercontent.com',
 });
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPass] = useState('');
   const [logInError, setLogInError] = useState('');
 
-  const createFirestoreUser = async (userId: string) => {
+  const createFirestoreUser = async (userId: string, email: string) => {
     const db = getFirestore();
 
     // Check to see if user already exists
@@ -32,38 +31,47 @@ export default function Login() {
       console.log('Creating user');
       await setDoc(doc(db, 'users', userId), {
         streak: 0,
+        email: email,
       });
     }
   };
 
   const googleSignIn = async () => {
     try {
-      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
       const signInResult = await GoogleSignin.signIn();
 
       if (signInResult.data) {
-        const googleCredential = auth.GoogleAuthProvider.credential(signInResult.data.idToken);
+        const googleCredential = auth.GoogleAuthProvider.credential(
+          signInResult.data.idToken,
+        );
         await auth().signInWithCredential(googleCredential);
-        console.log(googleCredential);
+
         const userId = auth().currentUser?.uid;
-        return userId;
-      } else { console.log('No sign in data') }
+        const userEmail = auth().currentUser?.email || '';
+        return { userId, userEmail };
+      } else {
+        console.log('No sign in data');
+        return null;
+      }
     } catch (e) {
       console.log(e);
       setLogInError((e as any).message);
+      return null;
     }
   };
 
   const authenticate = async () => {
     try {
-      const userId = await googleSignIn();
-      if (userId) {
-        await createFirestoreUser(userId);
-        router.push({pathname: '/(tabs)'});
+      const userInfo = await googleSignIn();
+      if (userInfo && userInfo.userId) {
+        await createFirestoreUser(userInfo.userId, userInfo.userEmail);
+        router.push({ pathname: '/(tabs)' });
       } else {
         setLogInError('Failed to get user ID');
       }
-      console.log('Log in User ID:', userId);
     } catch (e) {
       console.log(e);
       setLogInError((e as any).message);
@@ -73,24 +81,24 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
-        <MaterialCommunityIcons 
-          name="moon-waning-crescent" 
-          size={80} 
+        <MaterialCommunityIcons
+          name="moon-waning-crescent"
+          size={80}
           color={COLORS.accent}
           style={styles.icon}
         />
         <Text style={styles.title}>SleepStreak</Text>
       </View>
       <TouchableOpacity style={styles.logInButton} onPress={authenticate}>
-          <View style={styles.buttonContent}>
-            <MaterialCommunityIcons name="google" size={24} color={COLORS.text} />
-            <Text style={[styles.text, styles.signUpButtonText]}>Log in with Google</Text>
-          </View>
+        <View style={styles.buttonContent}>
+          <MaterialCommunityIcons name="google" size={24} color={COLORS.text} />
+          <Text style={[styles.text]}>Log in with Google</Text>
+        </View>
       </TouchableOpacity>
 
-      {logInError ? <Text style={
-        [styles.text, { color: COLORS.error }]
-      }>{logInError}</Text> : null}
+      {logInError ? (
+        <Text style={[styles.text, { color: COLORS.error }]}>{logInError}</Text>
+      ) : null}
     </View>
   );
 }
