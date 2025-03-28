@@ -9,15 +9,29 @@ import {
   getSleepData
 } from '../utils/sleepTracking';
 import { COLORS } from '@/constants/theme';
+import { doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
 
 interface SleepTrackerProps {
   user: FirebaseAuthTypes.User;
-  // googleFitAuth : boolean;
 }
 
 const SleepTracker: React.FC<SleepTrackerProps> = ({ user }) => {
   const [isTracking, setIsTracking] = useState<boolean>(false);
   const [sessionStart, setSessionStart] = useState<Date | null>(null);
+  const [googleFitAuth, setGoogleFitAuth] = useState<boolean>(false);
+  
+  useEffect(() => {
+    const getGoogleFitAuth = async (user: FirebaseAuthTypes.User) => {
+      const db = getFirestore();
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      setGoogleFitAuth(userDoc.data()?.googleFitAuth ?? false);
+    };
+
+    if (user) {
+      getGoogleFitAuth(user);
+    }
+  }, [user]);
+
 
   useEffect(() => {
     // Check if there's an active sleep session when component mounts
@@ -70,7 +84,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({ user }) => {
             style={[styles.button, styles.stopButton]}
             onPress={handleStopTracking}
           >
-            <Text style={styles.buttonText}>Stop Sleep Tracking</Text>
+            <Text style={styles.buttonText}>{googleFitAuth ? 'Stop Google Fit Sleep Tracking' : 'Stop Sleep Tracking'}</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -78,7 +92,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({ user }) => {
           style={[styles.button, styles.startButton]}
           onPress={handleStartTracking}
         >
-          <Text style={styles.buttonText}>Start Sleep Tracking</Text>
+          <Text style={styles.buttonText}>{googleFitAuth ? 'Start Google Fit Sleep Tracking' : 'Start Sleep Tracking'}</Text>
         </TouchableOpacity>
       )}
     </View>

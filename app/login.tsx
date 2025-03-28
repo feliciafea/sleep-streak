@@ -32,6 +32,7 @@ export default function Login() {
       console.log('Creating user');
       await setDoc(doc(db, 'users', userId), {
         streak: 0,
+        googleFitAuth: false,
       });
     }
   };

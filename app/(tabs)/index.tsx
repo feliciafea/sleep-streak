@@ -21,7 +21,6 @@ export default function HomeScreen() {
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [streak, setStreak] = useState<number>(0);
-  // const [googleFitAuth, setGoogleFitAuth] = useState<boolean>(false);
 
   function onAuthStateChanged(user: FirebaseAuthTypes.User | null) {
     setUser(user);
@@ -32,13 +31,6 @@ export default function HomeScreen() {
     const subscriber = getAuth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
-
-  // const params = useLocalSearchParams();
-  // useEffect(() => {
-  //   if (params.googleFitAuth) {
-  //     setGoogleFitAuth(params.googleFitAuth === 'true');
-  //   }
-  // }, [params.googleFitAuth]);
 
   useEffect(() => {
     const getUserStreak = async (user: FirebaseAuthTypes.User) => {
@@ -59,7 +51,6 @@ export default function HomeScreen() {
             if (!doc.data().active && doc.data().endTime) {
               let start = doc.data().startTime.toDate()
               let end = doc.data().endTime.toDate()
-              let penalties = doc.data().penalty
               let netTime = doc.data().netTime
               let totalSleep = doc.data().totalSleep
 
@@ -69,7 +60,7 @@ export default function HomeScreen() {
                 startTime: start,
                 endTime: end,
                 sleepTime: totalSleep,
-                netTime: Math.max(0, totalSleep - 15 * penalties)
+                netTime: netTime
               })
             }
           });

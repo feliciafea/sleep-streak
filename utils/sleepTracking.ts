@@ -97,11 +97,13 @@ export const authorizeGoogleFit = async () => {
 };
 
 export const getSleepData = async (startDate: Date, endDate: Date) => {
+  const fitAuth = await authorizeGoogleFit();
   const options = {
     startDate: startDate.toISOString(),
     endDate: endDate.toISOString(),
   };
   try {
+    // console.log('Sleep data options:', options);
     const sleepData = await GoogleFit.getSleepSamples(options, true);
     // console.log('Sleep data sleep samples:', sleepData);
     var totalSleep = 0;
@@ -118,7 +120,7 @@ export const getSleepData = async (startDate: Date, endDate: Date) => {
         // console.log('------------------------');
       });
       console.log(`Total Sleep: ${totalSleep} minutes`);
-    }
+    } else { console.log('No sleep data found'); }
     return totalSleep;
   } catch (error) {
     console.log('Sleep data error getting sleep samples:', error);
@@ -178,19 +180,29 @@ export const stopSleepSession = async (
   if (!activeSession || activeSession.empty) {
     throw new Error('User does not have an active sleep session');
   }
-  
 
   const db = getFirestore();
   const penalty = await AsyncStorage.getItem('sleepPenalty');
   const sessionData = activeSession.docs[0].data();
   const startTime = sessionData.startTime.toDate();
   const endTime = new Date();
+  const userDoc = await getDoc(doc(db, 'users', userID));
+  const userData = userDoc.data();
   const totalMinutes = Math.round((endTime.getTime() - startTime.getTime()) / (1000 * 60))
-  const netMinutes = Math.max(0, totalMinutes - (Number(penalty) * 15));
+  let netMinutes = 0;
+
+  if (userData?.googleFitAuth) {
+    netMinutes = (await getSleepData(startTime, endTime)) ?? 0;
+    console.log('GOOGLE FIT Net Minutes:', netMinutes);
+  } else {
+    netMinutes = Math.max(0, totalMinutes - (Number(penalty) * 15));
+    console.log('NORMAL Net Minutes:', netMinutes);
+
+  }
 
   // Update the sleep session document in Firestore
   const docRef = doc(db, 'sleepSessions', activeSession.docs[0].id);
-
+  console.log('Updating Net Minutes:', netMinutes);
   await updateDoc(docRef, {
     endTime: serverTimestamp(),
     active: false,

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '@/constants/theme';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -6,36 +6,62 @@ import { router, useLocalSearchParams } from 'expo-router';
 import {
   authorizeGoogleFit,
 } from '../utils/sleepTracking';
-import { getFirestore, doc, updateDoc, serverTimestamp } from '@react-native-firebase/firestore';
-import { useState } from 'react';
+import { getFirestore, doc, updateDoc, serverTimestamp, getDoc } from '@react-native-firebase/firestore';
+import { useEffect, useState } from 'react';
 
 
 export default function HelpScreen() {
   const params = useLocalSearchParams();
   const userId = params.userId as string;
   const [googleFitAuth, setGoogleFitAuth] = useState<boolean>(false);
+  const db = getFirestore();
+
+  useEffect(() => {
+    const fetchGoogleFitAuth = async () => {
+      if (userId) {
+        try {
+          const userDoc = await getDoc(doc(db, 'users', userId));
+          const userData = userDoc.data();
+          setGoogleFitAuth(userData?.googleFitAuth ?? false);
+        } catch (error) {
+          console.error('Error fetching Google Fit auth status:', error);
+        }
+      }
+    };
+
+    fetchGoogleFitAuth();
+  }, [userId]);
 
   
-  const authGoogleFit = async () => {
+  const toggleGoogleFit = async (value: boolean) => {
     try {
-      const auth = await authorizeGoogleFit();
-      setGoogleFitAuth(auth ?? false);
+      if (value) {
+        const auth = await authorizeGoogleFit();
+        setGoogleFitAuth(auth ?? false);
 
-      if (auth && userId) {
-        // Update Firestore user document
-        const db = getFirestore();
-        const userRef = doc(db, 'users', userId);
-        await updateDoc(userRef, {
-          googleFitAuth: true,
-          updatedAt: serverTimestamp()
-        });
-        console.log('Updated user Google Fit auth status');
+        if (auth && userId) {
+          const userRef = doc(db, 'users', userId);
+          await updateDoc(userRef, {
+            googleFitAuth: true,
+            updatedAt: serverTimestamp()
+          });
+          console.log('Updated user Google Fit auth status');
+        }
+      } else {
+        setGoogleFitAuth(false);
+        if (userId) {
+          const userRef = doc(db, 'users', userId);
+          await updateDoc(userRef, {
+            googleFitAuth: false,
+            updatedAt: serverTimestamp()
+          });
+        }
       }
     } catch (error) {
       console.error('Error updating Google Fit auth status:', error);
     }
+  };
 
-  }
   const handleBack = () => {
     router.push({
       pathname: '/(tabs)',
@@ -74,12 +100,21 @@ export default function HelpScreen() {
           <Text style={styles.text}>The sleep streak counter updates daily, counting the number of consequtive nights you got 7+ hours of sleep!  </Text>
         </View>
       </View>
-      <TouchableOpacity 
-        onPress={authGoogleFit}
-        style={styles.authButton}
-      >
-        <Text style={styles.text}>Auth sleep data</Text>
-      </TouchableOpacity>
+      <SafeAreaView style={styles.titleContainer}>
+        <TouchableOpacity style={styles.backButton} onPress={handleBack} >
+        </TouchableOpacity>
+        <Text style={styles.title}>Other tracking options: </Text>
+      </SafeAreaView>
+      <View style={styles.switchContainer}>
+        <Text style={styles.switchText}>Connect with Google Fit</Text>
+        <Switch
+          trackColor={{ false: COLORS.tabBar, true: COLORS.accent }}
+          thumbColor={COLORS.text}
+          ios_backgroundColor={COLORS.tabBar}
+          onValueChange={toggleGoogleFit}
+          value={googleFitAuth}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -108,6 +143,7 @@ const styles = StyleSheet.create({
     }, 
     listContainer: {
       width: '100%',
+      padding: 10
     },
     listItem: {
       flexDirection: 'row',
@@ -124,12 +160,19 @@ const styles = StyleSheet.create({
       marginRight: 10,
       marginVertical: 5,
     },
-    authButton: {
-      backgroundColor: COLORS.accent,
-      padding: 10,
-      borderRadius: 8,
-      margin: 10,
-    }
+    switchContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      width: '100%',
+      paddingHorizontal: 20,
+      marginVertical: 10,
+    },
+    switchText: {
+      color: COLORS.text,
+      fontSize: 16,
+      fontWeight: '500',
+    },
 
 
 });
