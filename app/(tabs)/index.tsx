@@ -16,11 +16,12 @@ import { COLORS } from '@/constants/theme';
 
 interface Session {
   id: string;
-  startTime: number;
-  endTime: number;
+  startTime: Date;
+  endTime: Date;
   sleepTime: number;
   netTime: number;
 }
+let alternateUI = true
 
 export default function HomeScreen() {
   // Set an initializing state whilst Firebase connects
@@ -110,7 +111,22 @@ export default function HomeScreen() {
               data={sessions}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
-                <View style={styles.sessionItem}>
+                alternateUI ? (
+                  <View style={styles.sessionCard} >
+                    <Text style={styles.sessionDate}>
+                      {item.startTime.toLocaleDateString()}
+                    </Text>
+                    <Text style={styles.sessionTime}>
+                      {item.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {item.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </Text>
+                    <Text style={styles.sessionTotal}>
+                      Total: {Math.floor(item.sleepTime / 60)} h{' '}
+                      {item.sleepTime % 60} m, {' '}
+                      Net: {Math.floor(item.netTime / 60)} h{' '}
+                      {item.netTime % 60} m
+                    </Text>
+                  </View>
+                ) : (<View style={styles.sessionItem}>
                   <Text style={styles.sessionText}>
                     Start Time: {item.startTime.toLocaleString()}
                   </Text>
@@ -125,13 +141,13 @@ export default function HomeScreen() {
                     NetTime: {Math.floor(item.netTime / 60)} hrs{' '}
                     {item.netTime % 60} mins
                   </Text>
-                </View>
+                </View>)
               )}
             />
           </>
         )}
       </View>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }
 
@@ -159,6 +175,37 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.text,
     marginTop: 10,
+  },
+  sessionCard: {
+    backgroundColor: COLORS.lightBackground,
+    borderRadius: 12,
+    padding: 15,
+    paddingBottom: 4,
+    marginVertical: 8,
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+    alignItems: 'center'
+  },
+  sessionDate: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: COLORS.accent,
+    fontWeight: 'bold',
+  },
+  sessionTime: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.text,
+    marginBottom: 10
+  },
+  sessionTotal: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: COLORS.text,
   },
   sessionItem: {
     display: 'flex',
