@@ -14,7 +14,8 @@ GoogleSignin.configure({
 
 export default function TabLayout() {
   const router = useRouter();
-
+  const currentUser = getAuth().currentUser;
+  
   const handleLogout = async () => {
     try {
       await getAuth().signOut();
@@ -43,10 +44,7 @@ export default function TabLayout() {
           </TouchableOpacity>
         ),
         headerRight: () => (
-          <TouchableOpacity
-            style={{ marginRight: 20 }}
-            onPress={() => router.push('/help')}
-          >
+          <TouchableOpacity style={{ marginRight: 20 }} onPress={() => router.push({ pathname: '/help', params: { userId: currentUser?.uid }})}>
             <MaterialCommunityIcons name="help" size={24} color={COLORS.icon} />
           </TouchableOpacity>
         ),

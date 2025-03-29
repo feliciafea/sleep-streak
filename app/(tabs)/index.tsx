@@ -1,4 +1,4 @@
-import { Text, StyleSheet, View, FlatList, ScrollView } from 'react-native';
+import { Text, StyleSheet, View, FlatList, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAuth, FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { useEffect, useState } from 'react';
@@ -67,22 +67,19 @@ export default function HomeScreen() {
           }
           querySnapShot.forEach((doc) => {
             if (!doc.data().active && doc.data().endTime) {
-              let start = doc.data().startTime.toDate();
-              let end = doc.data().endTime.toDate();
-              let penalties = doc.data().penalty;
+              let start = doc.data().startTime.toDate()
+              let end = doc.data().endTime.toDate()
+              let netTime = doc.data().netTime
+              let totalSleep = doc.data().totalSleep
 
               //sleepTime and netTime is in minutes
-              let totalSleep = Math.round(
-                (end.getTime() - start.getTime()) / (1000 * 60),
-              );
-
               list.push({
                 id: doc.id,
                 startTime: start,
                 endTime: end,
                 sleepTime: totalSleep,
-                netTime: Math.max(0, totalSleep - 15 * penalties),
-              });
+                netTime: netTime
+              })
             }
           });
           setSessions(list);
