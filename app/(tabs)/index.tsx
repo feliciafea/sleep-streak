@@ -109,6 +109,8 @@ export default function HomeScreen() {
             <Text style={styles.sessionTitle}>Sleep History</Text>
             <FlatList
               data={sessions}
+              contentContainerStyle={styles.listContainer}
+              style={styles.list}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 alternateUI ? (
@@ -157,7 +159,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: COLORS.background,
-    padding: 20,
+    padding: 5,
+    paddingTop: 0,
   },
   headerText: {
     fontSize: 24,
@@ -175,6 +178,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.text,
     marginTop: 10,
+    padding: 10,
   },
   sessionCard: {
     backgroundColor: COLORS.lightBackground,
@@ -183,6 +187,7 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
     marginVertical: 8,
     width: '100%',
+    height: 120,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
@@ -220,5 +225,12 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     color: COLORS.text,
     fontWeight: 'bold',
+  },
+  list: {
+    width: '90%', 
+  },
+  listContainer: {
+    paddingHorizontal: 10, 
+    width: '100%', 
   },
 });
