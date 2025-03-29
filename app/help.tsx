@@ -98,7 +98,7 @@ export default function HelpScreen() {
         </View>
         <View style={styles.listItem}>
           <Text style={styles.bulletAlt}>4.</Text>
-          <Text style={styles.textAlt}>Alternatively, if you have a fitbit you can choose to track your sleep with your fibit's data.</Text>
+          <Text style={styles.textAlt}> Alternatively, if you use a wearable that links with Google Fit, you can choose to track your sleep with your Google Fit data.</Text>
         </View>
         <View style={styles.listItem}>
           <Text style={styles.bulletAlt}>5.</Text>
