@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
 import auth from '@react-native-firebase/auth';
 import { useState } from 'react';
@@ -32,6 +32,8 @@ export default function Login() {
       await setDoc(doc(db, 'users', userId), {
         streak: 0,
         email: email,
+        googleFitAuth: false,
+
       });
     }
   };
@@ -81,19 +83,18 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
-        <MaterialCommunityIcons
-          name="moon-waning-crescent"
-          size={80}
-          color={COLORS.accent}
-          style={styles.icon}
-        />
+        <Image 
+            source={require('../assets/images/logo-sleep-streak.png')}
+            style={styles.icon}
+            resizeMode="contain"
+          />
         <Text style={styles.title}>SleepStreak</Text>
       </View>
       <TouchableOpacity style={styles.logInButton} onPress={authenticate}>
-        <View style={styles.buttonContent}>
-          <MaterialCommunityIcons name="google" size={24} color={COLORS.text} />
-          <Text style={[styles.text]}>Log in with Google</Text>
-        </View>
+          <View style={styles.buttonContent}>
+            <MaterialCommunityIcons name="google" size={24} color={COLORS.text} />
+            <Text style={[styles.text]}>Log in with Google</Text>
+          </View>
       </TouchableOpacity>
 
       {logInError ? (
@@ -131,6 +132,8 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginBottom: 20,
+    height: 200,
+    width: 200,
   },
   titleContainer: {
     alignItems: 'center',
