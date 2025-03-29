@@ -32,6 +32,10 @@ export default function HelpScreen() {
         </View>
         <View style={styles.listItem}>
           <Text style={styles.bulletAlt}>4.</Text>
+          <Text style={styles.textAlt}>Alternatively, if you have a fitbit you can choose to track your sleep with your fibit's data.</Text>
+        </View>
+        <View style={styles.listItem}>
+          <Text style={styles.bulletAlt}>5.</Text>
           <Text style={styles.textAlt}>The sleep streak counter updates daily, counting the number of consequtive nights you got 7+ hours of sleep!  </Text>
         </View>
       </View>) : (
@@ -52,6 +56,10 @@ export default function HelpScreen() {
           </View>
           <View style={styles.listItem}>
             <Text style={styles.bullet}>4.</Text>
+            <Text style={styles.text}>Alternatively, if you have a fitbit you can choose to track your sleep with your fibit's data.</Text>
+          </View>
+          <View style={styles.listItem}>
+            <Text style={styles.bullet}>5.</Text>
             <Text style={styles.text}>The sleep streak counter updates daily, counting the number of consequtive nights you got 7+ hours of sleep!  </Text>
           </View>
         </View>
