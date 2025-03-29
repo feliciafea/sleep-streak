@@ -189,11 +189,14 @@ export const stopSleepSession = async (
   const userDoc = await getDoc(doc(db, 'users', userID));
   const userData = userDoc.data();
   const totalMinutes = Math.round((endTime.getTime() - startTime.getTime()) / (1000 * 60))
+  console.log('Total Minutes:', totalMinutes);
   let netMinutes = 0;
+  let trackingType = "Default (Device Motion)";
 
   if (userData?.googleFitAuth) {
     netMinutes = (await getSleepData(startTime, endTime)) ?? 0;
     console.log('GOOGLE FIT Net Minutes:', netMinutes);
+    trackingType = "Google Fit";
   } else {
     netMinutes = Math.max(0, totalMinutes - (Number(penalty) * 15));
     console.log('NORMAL Net Minutes:', netMinutes);
@@ -209,6 +212,7 @@ export const stopSleepSession = async (
     penalty: Number(penalty),
     totalSleep: totalMinutes,
     netTime: netMinutes,
+    trackingType: trackingType,
   });
 
   // Clear the penalty from AsyncStorage and return the session data
