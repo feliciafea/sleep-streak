@@ -104,17 +104,7 @@ export default function HelpScreen() {
           <Text style={styles.bulletAlt}>5.</Text>
           <Text style={styles.textAlt}>The sleep streak counter updates daily, counting the number of consequtive nights you got 7+ hours of sleep!  </Text>
         </View>
-        <Text style={styles.title}>Other tracking options: </Text>
-        <View style={styles.switchContainer}>
-          <Text style={styles.switchText}>Use Google Fit (Android Only) </Text>
-          <Switch
-            trackColor={{ false: COLORS.tabBar, true: COLORS.accent }}
-            thumbColor={COLORS.text}
-            ios_backgroundColor={COLORS.tabBar}
-            onValueChange={toggleGoogleFit}
-            value={googleFitAuth}
-          />
-        </View>
+    
       </View>) : (
         <View style={styles.listContainer}>
           <View style={styles.listItem}>
@@ -141,6 +131,17 @@ export default function HelpScreen() {
           </View>
         </View>
       )}
+      <Text style={styles.switchTitle}>Other tracking options: </Text>
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchText}>Use Google Fit (Android Only) </Text>
+          <Switch
+            trackColor={{ false: COLORS.tabBar, true: COLORS.accent }}
+            thumbColor={COLORS.text}
+            ios_backgroundColor={COLORS.tabBar}
+            onValueChange={toggleGoogleFit}
+            value={googleFitAuth}
+          />
+        </View>
     </SafeAreaView>
   );
 }
@@ -219,6 +220,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '500',
     paddingRight: 8,
+  },
+  switchTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: COLORS.accent,
+    paddingTop: 30,
   },
 
 
