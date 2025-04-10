@@ -19,6 +19,7 @@ import * as TaskManager from 'expo-task-manager';
 import { DeviceMotion } from 'expo-sensors';
 import delay from './delay';
 import GoogleFit, { Scopes } from 'react-native-google-fit';
+import analytics from '@react-native-firebase/analytics';
 
 // Sleep Tracking Task that runs every 15 minutes and checks for movement
 // If movement is detected, it increases the penalty by 1
@@ -79,9 +80,7 @@ TaskManager.defineTask('SLEEP_TRACKING_TASK', async () => {
 
 export const authorizeGoogleFit = async () => {
   const options = {
-    scopes: [
-      Scopes.FITNESS_SLEEP_READ,
-    ]
+    scopes: [Scopes.FITNESS_SLEEP_READ],
   };
 
   try {
@@ -103,24 +102,21 @@ export const getSleepData = async (startDate: Date, endDate: Date) => {
     endDate: endDate.toISOString(),
   };
   try {
-    // console.log('Sleep data options:', options);
     const sleepData = await GoogleFit.getSleepSamples(options, true);
-    // console.log('Sleep data sleep samples:', sleepData);
     var totalSleep = 0;
     if (sleepData && sleepData.length > 0) {
-      sleepData.forEach(sample => {
+      sleepData.forEach((sample) => {
         const startTime = new Date(sample.startDate);
         const endTime = new Date(sample.endDate);
-        const durationInMinutes = Math.round((endTime.getTime() - startTime.getTime()) / (1000 * 60));
-        totalSleep += durationInMinutes
-        // console.log('Sleep Session:');
-        // console.log(`Start: ${startTime.toLocaleString()}`);
-        // console.log(`End: ${endTime.toLocaleString()}`);
-        // console.log(`Duration: ${durationInMinutes} minutes`);
-        // console.log('------------------------');
+        const durationInMinutes = Math.round(
+          (endTime.getTime() - startTime.getTime()) / (1000 * 60),
+        );
+        totalSleep += durationInMinutes;
       });
       console.log(`Total Sleep: ${totalSleep} minutes`);
-    } else { console.log('No sleep data found'); }
+    } else {
+      console.log('No sleep data found');
+    }
     return totalSleep;
   } catch (error) {
     console.log('Sleep data error getting sleep samples:', error);
@@ -151,6 +147,11 @@ export const startSleepSession = async (
     penalty: 0,
     startTime: serverTimestamp(),
     active: true,
+  });
+
+  await analytics().logEvent('start_sleep', {
+    userId: userID,
+    startTime: new Date(),
   });
 
   // Save the session ID and sleepPenalty in AsyncStorage
@@ -188,20 +189,30 @@ export const stopSleepSession = async (
   const endTime = new Date();
   const userDoc = await getDoc(doc(db, 'users', userID));
   const userData = userDoc.data();
-  const totalMinutes = Math.round((endTime.getTime() - startTime.getTime()) / (1000 * 60))
+  const totalMinutes = Math.round(
+    (endTime.getTime() - startTime.getTime()) / (1000 * 60),
+  );
   console.log('Total Minutes:', totalMinutes);
   let netMinutes = 0;
-  let trackingType = "Default (Device Motion)";
+  let trackingType = 'Default (Device Motion)';
 
   if (userData?.googleFitAuth) {
     netMinutes = (await getSleepData(startTime, endTime)) ?? 0;
     console.log('GOOGLE FIT Net Minutes:', netMinutes);
-    trackingType = "Google Fit";
+    trackingType = 'Google Fit';
   } else {
-    netMinutes = Math.max(0, totalMinutes - (Number(penalty) * 15));
+    netMinutes = Math.max(0, totalMinutes - Number(penalty) * 15);
     console.log('NORMAL Net Minutes:', netMinutes);
-
   }
+
+  await analytics().logEvent('stop_sleep', {
+    userId: userID,
+    startTime: startTime,
+    endTime: endTime,
+    totalSleep: totalMinutes,
+    netTime: netMinutes,
+    trackingType: trackingType,
+  });
 
   // Update the sleep session document in Firestore
   const docRef = doc(db, 'sleepSessions', activeSession.docs[0].id);

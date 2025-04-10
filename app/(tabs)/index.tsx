@@ -1,4 +1,4 @@
-import { Text, StyleSheet, View, FlatList, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, View, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAuth, FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { useEffect, useState } from 'react';
@@ -21,7 +21,6 @@ interface Session {
   sleepTime: number;
   netTime: number;
 }
-let alternateUI = true
 
 export default function HomeScreen() {
   // Set an initializing state whilst Firebase connects
@@ -46,7 +45,6 @@ export default function HomeScreen() {
       const userDocRef = doc(db, 'users', user.uid);
       onSnapshot(userDocRef, (docSnap) => {
         if (docSnap?.exists) {
-          console.log(docSnap.data());
           setStreak(docSnap.data()?.streak);
         }
       });
@@ -67,10 +65,10 @@ export default function HomeScreen() {
           }
           querySnapShot.forEach((doc) => {
             if (!doc.data().active && doc.data().endTime) {
-              let start = doc.data().startTime.toDate()
-              let end = doc.data().endTime.toDate()
-              let netTime = doc.data().netTime
-              let totalSleep = doc.data().totalSleep
+              let start = doc.data().startTime.toDate();
+              let end = doc.data().endTime.toDate();
+              let netTime = doc.data().netTime;
+              let totalSleep = doc.data().totalSleep;
 
               //sleepTime and netTime is in minutes
               list.push({
@@ -78,8 +76,8 @@ export default function HomeScreen() {
                 startTime: start,
                 endTime: end,
                 sleepTime: totalSleep,
-                netTime: netTime
-              })
+                netTime: netTime,
+              });
             }
           });
           setSessions(list);
@@ -110,43 +108,33 @@ export default function HomeScreen() {
               style={styles.list}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
-                alternateUI ? (
-                  <View style={styles.sessionCard} >
-                    <Text style={styles.sessionDate}>
-                      {item.startTime.toLocaleDateString()}
-                    </Text>
-                    <Text style={styles.sessionTime}>
-                      {item.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {item.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </Text>
-                    <Text style={styles.sessionTotal}>
-                      Total: {Math.floor(item.sleepTime / 60)} h{' '}
-                      {item.sleepTime % 60} m, {' '}
-                      Net: {Math.floor(item.netTime / 60)} h{' '}
-                      {item.netTime % 60} m
-                    </Text>
-                  </View>
-                ) : (<View style={styles.sessionItem}>
-                  <Text style={styles.sessionText}>
-                    Start Time: {item.startTime.toLocaleString()}
+                <View style={styles.sessionCard}>
+                  <Text style={styles.sessionDate}>
+                    {item.startTime.toLocaleDateString()}
                   </Text>
-                  <Text style={styles.sessionText}>
-                    End Time: {item.endTime.toLocaleString()}
+                  <Text style={styles.sessionTime}>
+                    {item.startTime.toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}{' '}
+                    -{' '}
+                    {item.endTime.toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
                   </Text>
-                  <Text style={styles.sessionText}>
-                    TotalTime: {Math.floor(item.sleepTime / 60)} hrs{' '}
-                    {item.sleepTime % 60} mins
+                  <Text style={styles.sessionTotal}>
+                    Total: {Math.floor(item.sleepTime / 60)} h{' '}
+                    {item.sleepTime % 60} m, Net:{' '}
+                    {Math.floor(item.netTime / 60)} h {item.netTime % 60} m
                   </Text>
-                  <Text style={styles.sessionText}>
-                    NetTime: {Math.floor(item.netTime / 60)} hrs{' '}
-                    {item.netTime % 60} mins
-                  </Text>
-                </View>)
+                </View>
               )}
             />
           </>
         )}
       </View>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 }
 
@@ -190,7 +178,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 3,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   sessionDate: {
     fontSize: 16,
@@ -202,7 +190,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: COLORS.text,
-    marginBottom: 10
+    marginBottom: 10,
   },
   sessionTotal: {
     fontSize: 13,
@@ -224,10 +212,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   list: {
-    width: '90%', 
+    width: '90%',
   },
   listContainer: {
-    paddingHorizontal: 10, 
-    width: '100%', 
+    paddingHorizontal: 10,
+    width: '100%',
   },
 });

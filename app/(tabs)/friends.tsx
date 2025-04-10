@@ -25,6 +25,7 @@ import {
   onSnapshot,
 } from '@react-native-firebase/firestore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import analytics from '@react-native-firebase/analytics';
 
 interface Friend {
   id: string;
@@ -217,6 +218,13 @@ export default function FriendsScreen() {
         createdAt: new Date(),
       });
 
+      await analytics().logEvent('send_friend_request', {
+        senderId: user.uid,
+        senderEmail: user.email,
+        receiverId: receiverId,
+        receiverEmail: email.trim(),
+      });
+
       Alert.alert('Success', 'Friend request sent');
       setEmail('');
     } catch (error) {
@@ -240,6 +248,13 @@ export default function FriendsScreen() {
       });
       await deleteDoc(doc(db, 'friendRequests', request.id));
 
+      await analytics().logEvent('accept_friend_request', {
+        senderId: request.senderId,
+        senderEmail: request.senderEmail,
+        accepterId: user.uid,
+        accepterEmail: user.email,
+      });
+
       Alert.alert('Success', 'Friend request accepted');
     } catch (error) {
       console.error('Error accepting friend request:', error);
@@ -249,13 +264,20 @@ export default function FriendsScreen() {
     }
   };
 
-  const rejectFriendRequest = async (requestId: string) => {
+  const rejectFriendRequest = async (request: FriendRequest) => {
     try {
       setLoading(true);
       const db = getFirestore();
 
       // Delete the request
-      await deleteDoc(doc(db, 'friendRequests', requestId));
+      await deleteDoc(doc(db, 'friendRequests', request.id));
+
+      await analytics().logEvent('reject_friend_request', {
+        senderId: request.senderId,
+        senderEmail: request.senderEmail,
+        rejectorId: user?.uid,
+        rejectorEmail: user?.email,
+      });
 
       Alert.alert('Success', 'Friend request rejected');
     } catch (error) {
@@ -266,7 +288,7 @@ export default function FriendsScreen() {
     }
   };
 
-  const removeFriend = async (friendId: string) => {
+  const removeFriend = async (friend: Friend) => {
     if (!user) return;
 
     try {
@@ -284,7 +306,7 @@ export default function FriendsScreen() {
       let friendshipDocId = null;
       friendshipQuery.forEach((doc) => {
         const data = doc.data();
-        if (data.users.includes(friendId)) {
+        if (data.users.includes(friend.id)) {
           friendshipDocId = doc.id;
         }
       });
@@ -292,6 +314,12 @@ export default function FriendsScreen() {
       if (friendshipDocId) {
         await deleteDoc(doc(db, 'friends', friendshipDocId));
         Alert.alert('Success', 'Friend removed');
+
+        await analytics().logEvent('remove_friend', {
+          userId: user.uid,
+          removedUserId: friend.id,
+          removedUserEmail: friend.email,
+        });
       }
     } catch (error) {
       console.error('Error removing friend:', error);
@@ -355,7 +383,7 @@ export default function FriendsScreen() {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.actionButton, styles.rejectButton]}
-                    onPress={() => rejectFriendRequest(item.id)}
+                    onPress={() => rejectFriendRequest(item)}
                   >
                     <MaterialCommunityIcons
                       name="close"
@@ -404,7 +432,7 @@ export default function FriendsScreen() {
                         { text: 'Cancel', style: 'cancel' },
                         {
                           text: 'Remove',
-                          onPress: () => removeFriend(item.id),
+                          onPress: () => removeFriend(item),
                         },
                       ],
                     );
