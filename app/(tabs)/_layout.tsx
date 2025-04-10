@@ -6,6 +6,7 @@ import { TouchableOpacity } from 'react-native';
 import { COLORS } from '@/constants/theme';
 import { getAuth } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import analytics from '@react-native-firebase/analytics';
 
 GoogleSignin.configure({
   webClientId:
@@ -15,9 +16,13 @@ GoogleSignin.configure({
 export default function TabLayout() {
   const router = useRouter();
   const currentUser = getAuth().currentUser;
-  
+
   const handleLogout = async () => {
     try {
+      await analytics().logEvent('logout', {
+        userId: currentUser?.uid,
+        email: currentUser?.email,
+      });
       await getAuth().signOut();
       await GoogleSignin.signOut();
     } catch (error) {
@@ -44,7 +49,15 @@ export default function TabLayout() {
           </TouchableOpacity>
         ),
         headerRight: () => (
-          <TouchableOpacity style={{ marginRight: 20 }} onPress={() => router.push({ pathname: '/help', params: { userId: currentUser?.uid }})}>
+          <TouchableOpacity
+            style={{ marginRight: 20 }}
+            onPress={() =>
+              router.push({
+                pathname: '/help',
+                params: { userId: currentUser?.uid },
+              })
+            }
+          >
             <MaterialCommunityIcons name="help" size={24} color={COLORS.icon} />
           </TouchableOpacity>
         ),

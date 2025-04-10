@@ -12,6 +12,7 @@ import {
 import { COLORS } from '@/constants/theme';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import analytics from '@react-native-firebase/analytics';
 
 GoogleSignin.configure({
   webClientId:
@@ -33,7 +34,9 @@ export default function Login() {
         streak: 0,
         email: email,
         googleFitAuth: false,
-
+      });
+      await analytics().logSignUp({
+        method: 'Google',
       });
     }
   };
@@ -69,6 +72,7 @@ export default function Login() {
     try {
       const userInfo = await googleSignIn();
       if (userInfo && userInfo.userId) {
+        await analytics().logLogin({ method: 'Google' });
         await createFirestoreUser(userInfo.userId, userInfo.userEmail);
         router.push({ pathname: '/(tabs)' });
       } else {
@@ -83,18 +87,18 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
-        <Image 
-            source={require('../assets/images/logo-sleep-streak.png')}
-            style={styles.icon}
-            resizeMode="contain"
-          />
+        <Image
+          source={require('../assets/images/logo-sleep-streak.png')}
+          style={styles.icon}
+          resizeMode="contain"
+        />
         <Text style={styles.title}>SleepStreak</Text>
       </View>
       <TouchableOpacity style={styles.logInButton} onPress={authenticate}>
-          <View style={styles.buttonContent}>
-            <MaterialCommunityIcons name="google" size={24} color={COLORS.text} />
-            <Text style={[styles.text]}>Log in with Google</Text>
-          </View>
+        <View style={styles.buttonContent}>
+          <MaterialCommunityIcons name="google" size={24} color={COLORS.text} />
+          <Text style={[styles.text]}>Log in with Google</Text>
+        </View>
       </TouchableOpacity>
 
       {logInError ? (
