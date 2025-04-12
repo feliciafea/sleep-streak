@@ -3,12 +3,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS } from '@/constants/theme';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router, useLocalSearchParams } from 'expo-router';
+import { authorizeGoogleFit } from '../utils/sleepTracking';
 import {
-  authorizeGoogleFit,
-} from '../utils/sleepTracking';
-import { getFirestore, doc, updateDoc, serverTimestamp, getDoc } from '@react-native-firebase/firestore';
+  getFirestore,
+  doc,
+  updateDoc,
+  serverTimestamp,
+  getDoc,
+} from '@react-native-firebase/firestore';
 import { useEffect, useState } from 'react';
-
 
 export default function HelpScreen() {
   const params = useLocalSearchParams();
@@ -33,7 +36,6 @@ export default function HelpScreen() {
     fetchGoogleFitAuth();
   }, [userId]);
 
-  
   const toggleGoogleFit = async (value: boolean) => {
     try {
       if (value) {
@@ -44,7 +46,7 @@ export default function HelpScreen() {
           const userRef = doc(db, 'users', userId);
           await updateDoc(userRef, {
             googleFitAuth: true,
-            updatedAt: serverTimestamp()
+            updatedAt: serverTimestamp(),
           });
           console.log('Updated user Google Fit auth status');
         }
@@ -54,7 +56,7 @@ export default function HelpScreen() {
           const userRef = doc(db, 'users', userId);
           await updateDoc(userRef, {
             googleFitAuth: false,
-            updatedAt: serverTimestamp()
+            updatedAt: serverTimestamp(),
           });
         }
       }
@@ -67,81 +69,108 @@ export default function HelpScreen() {
     router.push({
       pathname: '/(tabs)',
       params: {
-        googleFitAuth: googleFitAuth.toString()
-      }
+        googleFitAuth: googleFitAuth.toString(),
+      },
     });
   };
-   
+
   return (
     <SafeAreaView style={styles.container}>
-
       <SafeAreaView style={styles.titleContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack} >
+        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <MaterialIcons name="arrow-back" size={24} color={COLORS.icon} />
         </TouchableOpacity>
         <Text style={styles.title}>How do I use SleepStreak? </Text>
       </SafeAreaView>
-      {alternateUI ? (<View style={styles.listContainerAlt}>
-        <View style={styles.listItem}>
-          <Text style={styles.bulletAlt}>1.</Text>
-          <Text style={styles.textAlt}>Right before you go to bed, start a sleep session by pressing the "start sleep session" button.</Text>
+      {alternateUI ? (
+        <View style={styles.listContainerAlt}>
+          <View style={styles.listItem}>
+            <Text style={styles.bulletAlt}>1.</Text>
+            <Text style={styles.textAlt}>
+              Right before you go to bed, start a sleep session by pressing the
+              "start sleep session" button.
+            </Text>
+          </View>
+          <View style={styles.listItem}>
+            <Text style={styles.bulletAlt}>2.</Text>
+            <Text style={styles.textAlt}>
+              During your sleep session, SleepStreak will track device movements
+              that indicate you are not sleeping. If the app detects that you
+              are not sleeping, it will penalize your sleep time by 15 minutes!
+            </Text>
+          </View>
+          <View style={styles.listItem}>
+            <Text style={styles.bulletAlt}>3.</Text>
+            <Text style={styles.textAlt}>
+              When you wake up, stop the sleep session to end the tracking.
+            </Text>
+          </View>
+          <View style={styles.listItem}>
+            <Text style={styles.bulletAlt}>4.</Text>
+            <Text style={styles.textAlt}>
+              {' '}
+              Alternatively, if you use a wearable that links with Google Fit,
+              you can choose to track your sleep with your Google Fit data.
+            </Text>
+          </View>
+          <View style={styles.listItem}>
+            <Text style={styles.bulletAlt}>5.</Text>
+            <Text style={styles.textAlt}>
+              The sleep streak counter updates daily, counting the number of
+              consecutive nights you got 7+ hours of sleep!{' '}
+            </Text>
+          </View>
         </View>
-        <View style={styles.listItem}>
-          <Text style={styles.bulletAlt}>2.</Text>
-          <Text style={styles.textAlt}>During your sleep session, SleepStreak will track device movements that indicate you are not sleeping.
-            If the app detects that you are not sleeping, it will penalize your sleep time by 15 minutes!
-          </Text>
-        </View>
-        <View style={styles.listItem}>
-          <Text style={styles.bulletAlt}>3.</Text>
-          <Text style={styles.textAlt}>When you wake up, stop the sleep session to end the tracking.</Text>
-        </View>
-        <View style={styles.listItem}>
-          <Text style={styles.bulletAlt}>4.</Text>
-          <Text style={styles.textAlt}> Alternatively, if you use a wearable that links with Google Fit, you can choose to track your sleep with your Google Fit data.</Text>
-        </View>
-        <View style={styles.listItem}>
-          <Text style={styles.bulletAlt}>5.</Text>
-          <Text style={styles.textAlt}>The sleep streak counter updates daily, counting the number of consequtive nights you got 7+ hours of sleep!  </Text>
-        </View>
-    
-      </View>) : (
+      ) : (
         <View style={styles.listContainer}>
           <View style={styles.listItem}>
             <Text style={styles.bullet}>1.</Text>
-            <Text style={styles.text}>Right before you go to bed, start a sleep session by pressing the "start sleep session" button.</Text>
+            <Text style={styles.text}>
+              Right before you go to bed, start a sleep session by pressing the
+              "start sleep session" button.
+            </Text>
           </View>
           <View style={styles.listItem}>
             <Text style={styles.bullet}>2.</Text>
-            <Text style={styles.text}>During your sleep session, SleepStreak will track device movements that indicate you are not sleeping.
-              If the app detects that you are not sleeping, it will penalize your sleep time by 15 minutes!
+            <Text style={styles.text}>
+              During your sleep session, SleepStreak will track device movements
+              that indicate you are not sleeping. If the app detects that you
+              are not sleeping, it will penalize your sleep time by 15 minutes!
             </Text>
           </View>
           <View style={styles.listItem}>
             <Text style={styles.bullet}>3.</Text>
-            <Text style={styles.text}>When you wake up, stop the sleep session to end the tracking.</Text>
+            <Text style={styles.text}>
+              When you wake up, stop the sleep session to end the tracking.
+            </Text>
           </View>
           <View style={styles.listItem}>
             <Text style={styles.bullet}>4.</Text>
-            <Text style={styles.text}>Alternatively, if you have a fitbit you can choose to track your sleep with your fibit's data.</Text>
+            <Text style={styles.text}>
+              Alternatively, if you have a Fitbit you can choose to track your
+              sleep with your Fitbit's data.
+            </Text>
           </View>
           <View style={styles.listItem}>
             <Text style={styles.bullet}>5.</Text>
-            <Text style={styles.text}>The sleep streak counter updates daily, counting the number of consequtive nights you got 7+ hours of sleep!  </Text>
+            <Text style={styles.text}>
+              The sleep streak counter updates daily, counting the number of
+              consequtive nights you got 7+ hours of sleep!{' '}
+            </Text>
           </View>
         </View>
       )}
       <Text style={styles.switchTitle}>Other tracking options: </Text>
-        <View style={styles.switchContainer}>
-          <Text style={styles.switchText}>Use Google Fit (Android Only) </Text>
-          <Switch
-            trackColor={{ false: COLORS.tabBar, true: COLORS.accent }}
-            thumbColor={COLORS.text}
-            ios_backgroundColor={COLORS.tabBar}
-            onValueChange={toggleGoogleFit}
-            value={googleFitAuth}
-          />
-        </View>
+      <View style={styles.switchContainer}>
+        <Text style={styles.switchText}>Use Google Fit (Android Only) </Text>
+        <Switch
+          trackColor={{ false: COLORS.tabBar, true: COLORS.accent }}
+          thumbColor={COLORS.text}
+          ios_backgroundColor={COLORS.tabBar}
+          onValueChange={toggleGoogleFit}
+          value={googleFitAuth}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -158,7 +187,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 20,
     flexDirection: 'row',
-
   },
   title: {
     fontSize: 22,
@@ -178,7 +206,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2
+    elevation: 2,
   },
   listItem: {
     flexDirection: 'row',
@@ -189,7 +217,7 @@ const styles = StyleSheet.create({
     color: COLORS.accent,
     marginRight: 8,
     fontWeight: 'bold',
-    fontSize: 16
+    fontSize: 16,
   },
   backButton: {
     marginLeft: 0,
@@ -227,6 +255,4 @@ const styles = StyleSheet.create({
     color: COLORS.accent,
     paddingTop: 30,
   },
-
-
 });
