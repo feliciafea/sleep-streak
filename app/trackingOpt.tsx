@@ -10,7 +10,7 @@ import { getFirestore, doc, updateDoc, serverTimestamp, getDoc } from '@react-na
 import { useEffect, useState } from 'react';
 
 
-export default function HelpScreen() {
+export default function TrackingOptionsScreen() {
   const params = useLocalSearchParams();
   const userId = params.userId as string;
   const [googleFitAuth, setGoogleFitAuth] = useState<boolean>(false);
@@ -65,22 +65,23 @@ export default function HelpScreen() {
 
   const handleBack = () => {
     router.push({
-      pathname: '/(tabs)',
-      params: {
-        googleFitAuth: googleFitAuth.toString()
-      }
+      pathname: '/settings',
     });
   };
    
   return (
     <SafeAreaView style={styles.container}>
 
-      <SafeAreaView style={styles.titleContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack} >
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={handleBack}
+        >
           <MaterialIcons name="arrow-back" size={24} color={COLORS.icon} />
         </TouchableOpacity>
-        <Text style={styles.title}>How do I use SleepStreak? </Text>
-      </SafeAreaView>
+        <Text style={styles.headerTitle}>Tracking Options</Text>
+      </View>
+      <Text style={styles.switchTitle}>How is sleep tracked? </Text>
       {alternateUI ? (<View style={styles.listContainerAlt}>
         <View style={styles.listItem}>
           <Text style={styles.bulletAlt}>1.</Text>
@@ -154,16 +155,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },
-  titleContainer: {
-    alignItems: 'flex-start',
-    marginBottom: 20,
+  header: {
     flexDirection: 'row',
-
+    alignItems: 'center',
+    width: '100%',
+    paddingTop: 10,
+    paddingBottom: 20,
   },
-  title: {
-    fontSize: 22,
+  headerTitle: {
+    fontSize: 25,
     fontWeight: 'bold',
-    color: COLORS.accent,
+    color: COLORS.text,
+    marginLeft: 20,
   },
   textAlt: {
     color: COLORS.text,
@@ -178,7 +181,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2
+    elevation: 2,
+    marginVertical: 10
   },
   listItem: {
     flexDirection: 'row',
@@ -201,6 +205,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     width: '100%',
+    margin: 10
   },
   bullet: {
     color: COLORS.accent,
@@ -225,7 +230,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     color: COLORS.accent,
-    paddingTop: 30,
+    paddingTop: 10,
   },
 
 

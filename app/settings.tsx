@@ -10,7 +10,7 @@ import { getFirestore, doc, updateDoc, serverTimestamp, getDoc } from '@react-na
 import { useEffect, useState } from 'react';
 
 
-export default function HelpScreen() {
+export default function SettingsScreen() {
   const params = useLocalSearchParams();
   const userId = params.userId as string;
   const [googleFitAuth, setGoogleFitAuth] = useState<boolean>(false);
@@ -70,20 +70,63 @@ export default function HelpScreen() {
       }
     });
   };
+
+  const settingsOptions = [
+    {
+      title: 'Tracking Options',
+      icon: 'sensors',
+      onPress: () => router.push({
+        pathname: '/trackingOpt',
+        params: { userId }
+      })
+    },
+    {
+      title: 'Notifications',
+      icon: 'notifications',
+      onPress: () => router.push({
+        pathname: '/notifications',
+        params: { userId }
+      })
+    },
+  ];
+
+  interface SettingsItemProps {
+    title: string;
+    icon: string;
+    onPress: () => void;
+  }
+
+  const renderSettingsItem = ({ title, icon, onPress }: SettingsItemProps) => (
+    <TouchableOpacity 
+      key={title}
+      style={styles.settingItem} 
+      onPress={onPress}
+    >
+      <View style={styles.settingContent}>
+        <MaterialIcons name={icon} size={24} color={COLORS.icon} />
+        <Text style={styles.settingText}>{title}</Text>
+      </View>
+      <MaterialIcons name="chevron-right" size={24} color={COLORS.icon} />
+    </TouchableOpacity>
+  );
    
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.switchTitle}>Other tracking options: </Text>
-        <View style={styles.switchContainer}>
-          <Text style={styles.switchText}>Use Google Fit (Android Only) </Text>
-          <Switch
-            trackColor={{ false: COLORS.tabBar, true: COLORS.accent }}
-            thumbColor={COLORS.text}
-            ios_backgroundColor={COLORS.tabBar}
-            onValueChange={toggleGoogleFit}
-            value={googleFitAuth}
-          />
-        </View>
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={handleBack}
+        >
+          <MaterialIcons name="arrow-back" size={24} color={COLORS.icon} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Settings</Text>
+      </View>
+
+      <View style={styles.settingsList}>
+        {settingsOptions.map(renderSettingsItem)}
+      </View>
+      
+
     </SafeAreaView>
   );
 }
@@ -115,5 +158,42 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.accent,
     paddingTop: 30,
-  }
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    paddingVertical: 10,
+  },
+  headerTitle: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: COLORS.text,
+    marginLeft: 20,
+  },
+  backButton: {
+    padding: 8,
+  },
+  settingsList: {
+    width: '100%',
+    marginTop: 20,
+  },
+  settingItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.tabBar,
+    width: '100%',
+  },
+  settingContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  settingText: {
+    fontSize: 16,
+    color: COLORS.text,
+    marginLeft: 16,
+  },
 });
