@@ -60,6 +60,7 @@ export default function SettingsScreen() {
   const handleBack = () => {
     router.push({
       pathname: '/settings',
+      params: { userId: userId },
     });
   };
    

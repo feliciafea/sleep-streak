@@ -18,12 +18,15 @@ export default function TrackingOptionsScreen() {
   let alternateUI = true;
 
   useEffect(() => {
+    console.log('User ID:', userId);
+
     const fetchGoogleFitAuth = async () => {
       if (userId) {
         try {
           const userDoc = await getDoc(doc(db, 'users', userId));
           const userData = userDoc.data();
           setGoogleFitAuth(userData?.googleFitAuth ?? false);
+          console.log('Google Fit auth status:', userData?.googleFitAuth);
         } catch (error) {
           console.error('Error fetching Google Fit auth status:', error);
         }
@@ -39,6 +42,7 @@ export default function TrackingOptionsScreen() {
       if (value) {
         const auth = await authorizeGoogleFit();
         setGoogleFitAuth(auth ?? false);
+        console.log('Google Fit auth status:', auth, userId);
 
         if (auth && userId) {
           const userRef = doc(db, 'users', userId);
@@ -46,7 +50,7 @@ export default function TrackingOptionsScreen() {
             googleFitAuth: true,
             updatedAt: serverTimestamp()
           });
-          console.log('Updated user Google Fit auth status');
+          console.log('Updated user Google Fit auth status to true');
         }
       } else {
         setGoogleFitAuth(false);
@@ -56,6 +60,7 @@ export default function TrackingOptionsScreen() {
             googleFitAuth: false,
             updatedAt: serverTimestamp()
           });
+          console.log('Google Fit auth revoked');
         }
       }
     } catch (error) {
@@ -66,6 +71,7 @@ export default function TrackingOptionsScreen() {
   const handleBack = () => {
     router.push({
       pathname: '/settings',
+      params: { userId }
     });
   };
    
