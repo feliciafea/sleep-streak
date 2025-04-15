@@ -56,9 +56,17 @@
           "backgroundColor": "#30354D"
         }
       ]
+      
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "notification": {
+      "icon": "./assets/images/android-logo.png",
+      "color": "#000000",
+      "androidMode": "default",
+      "androidCollapsedTitle": "#{unread_notifications} new notifications",
+      "iosDisplayInForeground": true
     }
   }
 }
