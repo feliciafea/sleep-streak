@@ -13,7 +13,8 @@ import {
 } from '@react-native-firebase/firestore';
 import { useEffect, useState } from 'react';
 
-export default function HelpScreen() {
+
+export default function TrackingOptionsScreen() {
   const params = useLocalSearchParams();
   const userId = params.userId as string;
   const [googleFitAuth, setGoogleFitAuth] = useState<boolean>(false);
@@ -21,12 +22,15 @@ export default function HelpScreen() {
   let alternateUI = true;
 
   useEffect(() => {
+    console.log('User ID:', userId);
+
     const fetchGoogleFitAuth = async () => {
       if (userId) {
         try {
           const userDoc = await getDoc(doc(db, 'users', userId));
           const userData = userDoc.data();
           setGoogleFitAuth(userData?.googleFitAuth ?? false);
+          console.log('Google Fit auth status:', userData?.googleFitAuth);
         } catch (error) {
           console.error('Error fetching Google Fit auth status:', error);
         }
@@ -41,6 +45,7 @@ export default function HelpScreen() {
       if (value) {
         const auth = await authorizeGoogleFit();
         setGoogleFitAuth(auth ?? false);
+        console.log('Google Fit auth status:', auth, userId);
 
         if (auth && userId) {
           const userRef = doc(db, 'users', userId);
@@ -48,7 +53,7 @@ export default function HelpScreen() {
             googleFitAuth: true,
             updatedAt: serverTimestamp(),
           });
-          console.log('Updated user Google Fit auth status');
+          console.log('Updated user Google Fit auth status to true');
         }
       } else {
         setGoogleFitAuth(false);
@@ -58,6 +63,7 @@ export default function HelpScreen() {
             googleFitAuth: false,
             updatedAt: serverTimestamp(),
           });
+          console.log('Google Fit auth revoked');
         }
       }
     } catch (error) {
@@ -67,21 +73,22 @@ export default function HelpScreen() {
 
   const handleBack = () => {
     router.push({
-      pathname: '/(tabs)',
-      params: {
-        googleFitAuth: googleFitAuth.toString(),
-      },
+      pathname: '/settings',
+      params: { userId }
     });
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <SafeAreaView style={styles.titleContainer}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={handleBack}
+        >
           <MaterialIcons name="arrow-back" size={24} color={COLORS.icon} />
         </TouchableOpacity>
-        <Text style={styles.title}>How do I use SleepStreak? </Text>
-      </SafeAreaView>
+        <Text style={styles.headerTitle}>Tracking Options</Text>
+      </View>
       {alternateUI ? (
         <View style={styles.listContainerAlt}>
           <View style={styles.listItem}>
@@ -183,15 +190,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },
-  titleContainer: {
-    alignItems: 'flex-start',
-    marginBottom: 20,
+  header: {
     flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    paddingTop: 10,
+    paddingBottom: 20,
   },
-  title: {
-    fontSize: 22,
+  headerTitle: {
+    fontSize: 25,
     fontWeight: 'bold',
-    color: COLORS.accent,
+    color: COLORS.text,
+    marginLeft: 20,
   },
   textAlt: {
     color: COLORS.text,
@@ -207,6 +217,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+    marginVertical: 10
   },
   listItem: {
     flexDirection: 'row',
@@ -229,6 +240,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     width: '100%',
+    margin: 10
   },
   bullet: {
     color: COLORS.accent,
@@ -253,6 +265,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     color: COLORS.accent,
-    paddingTop: 30,
+    paddingTop: 10,
   },
 });
