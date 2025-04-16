@@ -17,16 +17,19 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({ user }) => {
   const [isTracking, setIsTracking] = useState<boolean>(false);
   const [sessionStart, setSessionStart] = useState<Date | null>(null);
   const [googleFitAuth, setGoogleFitAuth] = useState<boolean>(false);
+  const [bedTime, setBedTime] = useState<Date | null>(null);
+
 
   useEffect(() => {
-    const getGoogleFitAuth = async (user: FirebaseAuthTypes.User) => {
+    const getUserData = async (user: FirebaseAuthTypes.User) => {
       const db = getFirestore();
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       setGoogleFitAuth(userDoc.data()?.googleFitAuth ?? false);
+      setBedTime(userDoc.data()?.bedTime.toDate());
     };
 
     if (user) {
-      getGoogleFitAuth(user);
+      getUserData(user);
     }
   }, [user]);
 
@@ -59,6 +62,12 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({ user }) => {
     }
   };
 
+  const isBedtimeCompliant = (sessionStart: Date, targetBedtime: Date): boolean => {
+    const sessionTime = sessionStart.getHours() * 60 + sessionStart.getMinutes();
+    const bedtime = targetBedtime.getHours() * 60 + targetBedtime.getMinutes();
+    return Math.abs(sessionTime - bedtime) <= 20;
+  };
+
   const handleStopTracking = async () => {
     try {
       await stopSleepSession(user.uid);
@@ -77,6 +86,18 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({ user }) => {
             Sleep tracking active since:{' '}
             {sessionStart ? sessionStart.toLocaleTimeString() : ''}
           </Text>
+          {sessionStart && bedTime && (
+            <Text style={[
+              styles.trackingText,
+              // isBedtimeCompliant(sessionStart, bedTime) 
+              //   ? styles.goodFeedback 
+              //   : styles.badFeedback
+            ]}>
+              {isBedtimeCompliant(sessionStart, bedTime)
+                ? "Great job maintaining your bedtime! 🌟" 
+                : "Try to start closer to your bedtime! 😴"}
+            </Text>
+          )}
           <TouchableOpacity
             style={[styles.button, styles.stopButton]}
             onPress={handleStopTracking}
@@ -86,6 +107,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({ user }) => {
                 ? 'Stop Google Fit Sleep Tracking'
                 : 'Stop Sleep Tracking'}
             </Text>
+
           </TouchableOpacity>
         </View>
       ) : (
@@ -118,6 +140,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   button: {
+    marginTop: 10,
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -148,7 +171,7 @@ const styles = StyleSheet.create({
   },
   trackingText: {
     fontSize: 16,
-    marginBottom: 15,
+    paddingBottom: 15,
     color: COLORS.text,
   },
 });
