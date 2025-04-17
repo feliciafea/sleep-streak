@@ -65,7 +65,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({ user }) => {
   const isBedtimeCompliant = (sessionStart: Date, targetBedtime: Date): boolean => {
     const sessionTime = sessionStart.getHours() * 60 + sessionStart.getMinutes();
     const bedtime = targetBedtime.getHours() * 60 + targetBedtime.getMinutes();
-    return Math.abs(sessionTime - bedtime) <= 20;
+    return Math.abs(sessionTime - bedtime) <= 30;
   };
 
   const handleStopTracking = async () => {
