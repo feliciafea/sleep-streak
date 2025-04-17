@@ -101,36 +101,6 @@ export default function HomeScreen() {
             <Text style={styles.headerText}>Sleep Streak</Text>
             <Text style={styles.streakText}>{streak}</Text>
             <SleepTracker user={user} />
-            <Text style={styles.sessionTitle}>Sleep History</Text>
-            <FlatList
-              data={sessions}
-              contentContainerStyle={styles.listContainer}
-              style={styles.list}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <View style={styles.sessionCard}>
-                  <Text style={styles.sessionDate}>
-                    {item.startTime.toLocaleDateString()}
-                  </Text>
-                  <Text style={styles.sessionTime}>
-                    {item.startTime.toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}{' '}
-                    -{' '}
-                    {item.endTime.toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </Text>
-                  <Text style={styles.sessionTotal}>
-                    Total: {Math.floor(item.sleepTime / 60)} h{' '}
-                    {item.sleepTime % 60} m, Net:{' '}
-                    {Math.floor(item.netTime / 60)} h {item.netTime % 60} m
-                  </Text>
-                </View>
-              )}
-            />
           </>
         )}
       </View>

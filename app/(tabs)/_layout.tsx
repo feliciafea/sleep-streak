@@ -69,23 +69,23 @@ export default function TabLayout() {
     });
   };
 
-    useEffect(() => {
-      registerForPushNotificationsAsync();
-      setupSleepReminder();
-    }, []);
-  
-    const registerForPushNotificationsAsync = async () => {
-      const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      
-      if (existingStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      } else {
-        console.log('Failed to get push token for push notification!');
-        return;
-      }
-    };
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+    setupSleepReminder();
+  }, []);
+
+  const registerForPushNotificationsAsync = async () => {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    } else {
+      console.log('Failed to get push token for push notification!');
+      return;
+    }
+  };
 
   return (
     <Tabs
@@ -106,7 +106,7 @@ export default function TabLayout() {
           </TouchableOpacity>
         ),
         headerRight: () => (
-          <TouchableOpacity style={{ marginRight: 20 }} onPress={() => router.push({ pathname: '../settings', params: { userId: currentUser?.uid }})}>
+          <TouchableOpacity style={{ marginRight: 20 }} onPress={() => router.push({ pathname: '../settings', params: { userId: currentUser?.uid } })}>
             <MaterialCommunityIcons name="cog" size={24} color={COLORS.icon} />
           </TouchableOpacity>
         ),
@@ -139,6 +139,15 @@ export default function TabLayout() {
           title: 'Friends',
           tabBarIcon: ({ color }) => (
             <FontAwesome5 name="user-friends" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="history"
+        options={{
+          title: 'History',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="history" size={24} color={color} />
           ),
         }}
       />
