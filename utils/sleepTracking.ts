@@ -198,6 +198,10 @@ export const stopSleepSession = async (
 
   if (userData?.googleFitAuth) {
     netMinutes = (await getSleepData(startTime, endTime)) ?? 0;
+    if (netMinutes == 0) {
+      netMinutes = Math.max(0, totalMinutes - Number(penalty) * 15);
+      console.log('No sleep data found, using default method: ', netMinutes);
+    }
     console.log('GOOGLE FIT Net Minutes:', netMinutes);
     trackingType = 'Google Fit';
   } else {
