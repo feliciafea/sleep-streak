@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAuth, FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { useEffect, useState } from 'react';
 import SleepTracker from '../../components/SleepTracker';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import {
   collection,
   doc,
@@ -14,19 +15,13 @@ import {
 } from '@react-native-firebase/firestore';
 import { COLORS } from '@/constants/theme';
 
-interface Session {
-  id: string;
-  startTime: Date;
-  endTime: Date;
-  sleepTime: number;
-  netTime: number;
-}
+
 
 export default function HomeScreen() {
   // Set an initializing state whilst Firebase connects
   const [initializing, setInitializing] = useState<boolean>(true);
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const [averageSleep, setAverageSleep] = useState<number>(0);
   const [streak, setStreak] = useState<number>(0);
 
   function onAuthStateChanged(user: FirebaseAuthTypes.User | null) {
@@ -59,28 +54,23 @@ export default function HomeScreen() {
           orderBy('endTime', 'desc'),
         ),
         (querySnapShot) => {
-          const list: Session[] = [];
+          const list: number[] = [];
           if (!querySnapShot || querySnapShot.empty) {
             return;
           }
           querySnapShot.forEach((doc) => {
             if (!doc.data().active && doc.data().endTime) {
-              let start = doc.data().startTime.toDate();
-              let end = doc.data().endTime.toDate();
               let netTime = doc.data().netTime;
-              let totalSleep = doc.data().totalSleep;
-
-              //sleepTime and netTime is in minutes
-              list.push({
-                id: doc.id,
-                startTime: start,
-                endTime: end,
-                sleepTime: totalSleep,
-                netTime: netTime,
-              });
+              list.push(netTime);
             }
           });
-          setSessions(list);
+          if (list.length == 0) {
+            setAverageSleep(0)
+          } else {
+            let avg = list.reduce((acc, sleep) => acc + sleep, 0) / list.length
+            avg = avg / 60
+            setAverageSleep(avg)
+          }
         },
       );
     };
@@ -101,36 +91,15 @@ export default function HomeScreen() {
             <Text style={styles.headerText}>Sleep Streak</Text>
             <Text style={styles.streakText}>{streak}</Text>
             <SleepTracker user={user} />
-            <Text style={styles.sessionTitle}>Sleep History</Text>
-            <FlatList
-              data={sessions}
-              contentContainerStyle={styles.listContainer}
-              style={styles.list}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <View style={styles.sessionCard}>
-                  <Text style={styles.sessionDate}>
-                    {item.startTime.toLocaleDateString()}
-                  </Text>
-                  <Text style={styles.sessionTime}>
-                    {item.startTime.toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}{' '}
-                    -{' '}
-                    {item.endTime.toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </Text>
-                  <Text style={styles.sessionTotal}>
-                    Total: {Math.floor(item.sleepTime / 60)} h{' '}
-                    {item.sleepTime % 60} m, Net:{' '}
-                    {Math.floor(item.netTime / 60)} h {item.netTime % 60} m
-                  </Text>
-                </View>
-              )}
-            />
+            <View style={styles.averageCard}>
+              <Text style={styles.averageTitle}>
+                Average Sleep Time
+              </Text>
+              <Text style={styles.averageText}>
+                {averageSleep.toFixed(1)} hrs
+              </Text>
+            </View>
+
           </>
         )}
       </View>
@@ -146,9 +115,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     padding: 5,
     paddingTop: 0,
+    justifyContent: 'center',
   },
   headerText: {
-    fontSize: 24,
+    fontSize: 40,
     fontWeight: 'bold',
     color: COLORS.text,
   },
@@ -158,64 +128,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.accent,
   },
-  sessionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: COLORS.text,
-    marginTop: 10,
-    padding: 10,
-  },
-  sessionCard: {
+
+  averageCard: {
+    marginBlockStart: 40,
     backgroundColor: COLORS.lightBackground,
-    borderRadius: 12,
+    borderRadius: 5,
     padding: 15,
-    paddingBottom: 4,
-    marginVertical: 8,
-    width: '100%',
-    height: 120,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
+    marginVertical: 15,
+    width: '75%',
+    elevation: 5,
     alignItems: 'center',
   },
-  sessionDate: {
-    fontSize: 16,
-    marginBottom: 10,
+  averageTitle: {
+    fontSize: 20,
+    color: COLORS.text,
+    fontWeight: 'bold',
+    padding: 10
+  },
+  averageText: {
+    fontSize: 18,
     color: COLORS.accent,
-    fontWeight: 'bold',
-  },
-  sessionTime: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: 10,
-  },
-  sessionTotal: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: COLORS.text,
-  },
-  sessionItem: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    margin: 10,
-    backgroundColor: COLORS.lightBackground,
-    padding: 10,
-  },
-  sessionText: {
-    fontSize: 16,
-    marginBottom: 15,
-    color: COLORS.text,
-    fontWeight: 'bold',
-  },
-  list: {
-    width: '90%',
-  },
-  listContainer: {
-    paddingHorizontal: 10,
-    width: '100%',
   },
 });
