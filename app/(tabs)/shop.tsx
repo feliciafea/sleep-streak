@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: COLORS.background,
     borderRadius: 16,
-    padding: 24,
+    padding: 20,
     width: '85%',
     maxWidth: 400,
     alignItems: 'center',
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: COLORS.text,
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: 'bold',
   },
 });
