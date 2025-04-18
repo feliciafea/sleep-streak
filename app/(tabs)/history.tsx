@@ -13,6 +13,8 @@ import {
 } from '@react-native-firebase/firestore';
 import { COLORS } from '@/constants/theme';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+
 import { Alert } from 'react-native';
 interface Session {
     id: string;
@@ -137,8 +139,8 @@ export default function HistoryScreen() {
                                         {item.sleepTime % 60} m, Net:{' '}
                                         {Math.floor(item.netTime / 60)} h {item.netTime % 60} m
                                     </Text>
-                                    <TouchableOpacity style={{ alignItems: "flex-end" }} onPress={() => deleteSession(item.id)}>
-                                        <MaterialCommunityIcons name="delete" size={20} color="white" />
+                                    <TouchableOpacity style={{ alignSelf: "flex-end" }} onPress={() => deleteSession(item.id)}>
+                                        <FontAwesome name="trash-o" size={20} color="#8B0000" />
                                     </TouchableOpacity>
                                 </View>
                             )}
@@ -159,11 +161,6 @@ const styles = StyleSheet.create({
         padding: 5,
         paddingTop: 0,
     },
-    headerText: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: COLORS.text,
-    },
     streakText: {
         fontSize: 50,
         marginVertical: 10,
@@ -171,7 +168,7 @@ const styles = StyleSheet.create({
         color: COLORS.accent,
     },
     sessionTitle: {
-        fontSize: 18,
+        fontSize: 40,
         fontWeight: 'bold',
         color: COLORS.text,
         marginTop: 10,
