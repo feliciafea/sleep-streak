@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     padding: 5,
     paddingTop: 0,
-    justifyContent: 'center',
+    justifyContent: 'flex-start'
   },
   headerText: {
     fontSize: 40,
