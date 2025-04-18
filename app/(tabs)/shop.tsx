@@ -38,22 +38,29 @@ export default function Shop() {
 
   const shopItems: ShopItem[] = [
     {
+      id: 'freeze',
+      name: 'Streak Freeze',
+      description:
+        'The Streak Freeze will keep your streak alive for 1 day if you forget to record your sleep.',
+      cost: 200,
+    },
+    {
       id: 'pillow',
       name: 'Premium Pillow',
       description: 'A comfortable pillow to improve your sleep quality',
-      cost: 20000,
+      cost: 2000,
     },
     {
       id: 'blanket',
       name: 'Cozy Blanket',
       description: 'Stay warm at night with this soft blanket',
-      cost: 15000,
+      cost: 1500,
     },
     {
       id: 'sleep-mask',
       name: 'Sleep Mask',
       description: 'Block out light for improved sleep quality',
-      cost: 5000,
+      cost: 500,
     },
   ];
 

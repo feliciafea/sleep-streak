@@ -131,7 +131,7 @@ export const updateSleepStreaks = onSchedule(
             // User met sleep goal, increment streak
             await userDoc.ref.update({
               streak: currentStreak + 1,
-              tokens: tokens + 100,
+              tokens: tokens + 10,
               lastStreakUpdate: Timestamp.now(),
             });
             logger.info(
