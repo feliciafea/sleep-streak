@@ -160,6 +160,8 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.background,
         padding: 5,
         paddingTop: 0,
+
+
     },
     streakText: {
         fontSize: 50,
@@ -171,8 +173,8 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontWeight: 'bold',
         color: COLORS.text,
-        marginTop: 10,
         padding: 10,
+        paddingBlockStart: 0
     },
     sessionCard: {
         backgroundColor: COLORS.lightBackground,
