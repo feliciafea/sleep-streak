@@ -138,6 +138,11 @@ const styles = StyleSheet.create({
     width: '75%',
     elevation: 5,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 5, height: 5 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+
   },
   averageTitle: {
     fontSize: 20,
