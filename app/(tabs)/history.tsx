@@ -139,7 +139,7 @@ export default function HistoryScreen() {
                                         {item.sleepTime % 60} m, Net:{' '}
                                         {Math.floor(item.netTime / 60)} h {item.netTime % 60} m
                                     </Text>
-                                    <TouchableOpacity style={{ alignSelf: "flex-end" }} onPress={() => deleteSession(item.id)}>
+                                    <TouchableOpacity style={styles.trashButton} onPress={() => deleteSession(item.id)}>
                                         <FontAwesome name="trash-o" size={20} color="#8B0000" />
                                     </TouchableOpacity>
                                 </View>
@@ -160,8 +160,6 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.background,
         padding: 5,
         paddingTop: 0,
-
-
     },
     streakText: {
         fontSize: 50,
@@ -170,7 +168,7 @@ const styles = StyleSheet.create({
         color: COLORS.accent,
     },
     sessionTitle: {
-        fontSize: 40,
+        fontSize: 28,
         fontWeight: 'bold',
         color: COLORS.text,
         padding: 10,
@@ -190,6 +188,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 3,
         alignItems: 'center',
+        position: 'relative', 
     },
     sessionDate: {
         fontSize: 16,
@@ -229,5 +228,10 @@ const styles = StyleSheet.create({
     listContainer: {
         paddingHorizontal: 10,
         width: '100%',
+    },
+    trashButton: {
+        position: 'absolute',
+        right: 10,
+        bottom: 10,
     },
 });
