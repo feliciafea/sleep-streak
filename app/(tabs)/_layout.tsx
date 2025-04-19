@@ -107,59 +107,72 @@ export default function TabLayout() {
           </TouchableOpacity>
         ),
         headerRight: () => (
+<<<<<<< HEAD
+          <TouchableOpacity style={{ marginRight: 20 }} onPress={() => router.push({ pathname: '../settings', params: { userId: currentUser?.uid } })}>
+=======
           <TouchableOpacity
-            style={{ marginRight: 20 }}
-            onPress={() =>
-              router.push({
-                pathname: '../settings',
-                params: { userId: currentUser?.uid },
-              })
-            }
-          >
-            <MaterialCommunityIcons name="cog" size={24} color={COLORS.icon} />
-          </TouchableOpacity>
-        ),
-        headerStyle: {
-          backgroundColor: COLORS.background,
+              style={{ marginRight: 20 }}
+              onPress={() =>
+                router.push({
+                  pathname: '../settings',
+                  params: { userId: currentUser?.uid },
+                })
+              }
+            >
+>>>>>>> main
+              <MaterialCommunityIcons name="cog" size={24} color={COLORS.icon} />
+            </TouchableOpacity>
+            ),
+            headerStyle: {
+              backgroundColor: COLORS.background,
         },
-        tabBarStyle: {
-          backgroundColor: COLORS.tabBar,
+            tabBarStyle: {
+              backgroundColor: COLORS.tabBar,
         },
-        tabBarActiveTintColor: COLORS.accent,
-        tabBarInactiveTintColor: COLORS.icon,
+            tabBarActiveTintColor: COLORS.accent,
+            tabBarInactiveTintColor: COLORS.icon,
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Sleep',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name="power-sleep"
-              size={24}
-              color={color}
+            <Tabs.Screen
+              name="index"
+              options={{
+                title: 'Sleep',
+                tabBarIcon: ({ color }) => (
+                  <MaterialCommunityIcons
+                    name="power-sleep"
+                    size={24}
+                    color={color}
+                  />
+                ),
+              }}
             />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="friends"
-        options={{
-          title: 'Friends',
-          tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="user-friends" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="shop"
-        options={{
-          title: 'Shop',
-          tabBarIcon: ({ color }) => (
-            <Entypo name="shop" size={24} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
-  );
-}
+            <Tabs.Screen
+              name="history"
+              options={{
+                title: 'History',
+                tabBarIcon: ({ color }) => (
+                  <MaterialCommunityIcons name="history" size={24} color={color} />
+                ),
+              }}
+            />
+            <Tabs.Screen
+              name="friends"
+              options={{
+                title: 'Friends',
+                tabBarIcon: ({ color }) => (
+                  <FontAwesome5 name="user-friends" size={24} color={color} />
+                ),
+              }}
+            />
+            <Tabs.Screen
+              name="shop"
+              options={{
+                title: 'Shop',
+                tabBarIcon: ({ color }) => (
+                  <Entypo name="shop" size={24} color={color} />
+                ),
+              }}
+            />
+          </Tabs>
+        );
+      }

@@ -89,12 +89,12 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({ user }) => {
           {sessionStart && bedTime && (
             <Text style={[
               styles.trackingText,
-              isBedtimeCompliant(sessionStart, bedTime) 
-                ? styles.goodFeedback 
+              isBedtimeCompliant(sessionStart, bedTime)
+                ? styles.goodFeedback
                 : styles.badFeedback
             ]}>
               {isBedtimeCompliant(sessionStart, bedTime)
-                ? "Great job maintaining your bedtime! 🌟" 
+                ? "Great job maintaining your bedtime! 🌟"
                 : "Try to start closer to your bedtime! 😴"}
             </Text>
           )}
@@ -151,8 +151,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     shadowColor: '#000',
     shadowOffset: {
-      width: 0,
-      height: 2,
+      width: 2,
+      height: 4,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
