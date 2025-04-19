@@ -2,6 +2,7 @@ import { useRouter, Tabs } from 'expo-router';
 import React, { useEffect } from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import Entypo from '@expo/vector-icons/Entypo';
 import { TouchableOpacity } from 'react-native';
 import { COLORS } from '@/constants/theme';
 import { getAuth } from '@react-native-firebase/auth';
@@ -17,7 +18,6 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-
 
 GoogleSignin.configure({
   webClientId:
@@ -50,10 +50,10 @@ export default function TabLayout() {
       userBedTime = userDoc.data()?.bedTime?.toDate() || new Date();
     }
 
-    // Daily reminder notifications 
+    // Daily reminder notifications
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: "Time to sleep! 😴",
+        title: 'Time to sleep! 😴',
         body: "Don't forget to start your sleep session to maintain your streak!",
         sound: true,
       },
@@ -75,7 +75,8 @@ export default function TabLayout() {
   }, []);
 
   const registerForPushNotificationsAsync = async () => {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
 
     if (existingStatus !== 'granted') {
@@ -106,51 +107,72 @@ export default function TabLayout() {
           </TouchableOpacity>
         ),
         headerRight: () => (
+<<<<<<< HEAD
           <TouchableOpacity style={{ marginRight: 20 }} onPress={() => router.push({ pathname: '../settings', params: { userId: currentUser?.uid } })}>
-            <MaterialCommunityIcons name="cog" size={24} color={COLORS.icon} />
-          </TouchableOpacity>
-        ),
-        headerStyle: {
-          backgroundColor: COLORS.background,
+=======
+          <TouchableOpacity
+              style={{ marginRight: 20 }}
+              onPress={() =>
+                router.push({
+                  pathname: '../settings',
+                  params: { userId: currentUser?.uid },
+                })
+              }
+            >
+>>>>>>> main
+              <MaterialCommunityIcons name="cog" size={24} color={COLORS.icon} />
+            </TouchableOpacity>
+            ),
+            headerStyle: {
+              backgroundColor: COLORS.background,
         },
-        tabBarStyle: {
-          backgroundColor: COLORS.tabBar,
+            tabBarStyle: {
+              backgroundColor: COLORS.tabBar,
         },
-        tabBarActiveTintColor: COLORS.accent,
-        tabBarInactiveTintColor: COLORS.icon,
+            tabBarActiveTintColor: COLORS.accent,
+            tabBarInactiveTintColor: COLORS.icon,
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Sleep',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name="power-sleep"
-              size={24}
-              color={color}
+            <Tabs.Screen
+              name="index"
+              options={{
+                title: 'Sleep',
+                tabBarIcon: ({ color }) => (
+                  <MaterialCommunityIcons
+                    name="power-sleep"
+                    size={24}
+                    color={color}
+                  />
+                ),
+              }}
             />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="history"
-        options={{
-          title: 'History',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="history" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="friends"
-        options={{
-          title: 'Friends',
-          tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="user-friends" size={24} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
-  );
-}
+            <Tabs.Screen
+              name="history"
+              options={{
+                title: 'History',
+                tabBarIcon: ({ color }) => (
+                  <MaterialCommunityIcons name="history" size={24} color={color} />
+                ),
+              }}
+            />
+            <Tabs.Screen
+              name="friends"
+              options={{
+                title: 'Friends',
+                tabBarIcon: ({ color }) => (
+                  <FontAwesome5 name="user-friends" size={24} color={color} />
+                ),
+              }}
+            />
+            <Tabs.Screen
+              name="shop"
+              options={{
+                title: 'Shop',
+                tabBarIcon: ({ color }) => (
+                  <Entypo name="shop" size={24} color={color} />
+                ),
+              }}
+            />
+          </Tabs>
+        );
+      }
