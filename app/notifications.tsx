@@ -63,6 +63,7 @@ export default function SettingsScreen() {
       params: { userId: userId },
     });
   };
+  
    
   return (
     <SafeAreaView style={styles.container}>

@@ -26,6 +26,7 @@ import {
 } from '@react-native-firebase/firestore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import analytics from '@react-native-firebase/analytics';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 interface Friend {
   id: string;
@@ -45,6 +46,7 @@ export default function FriendsScreen() {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [pendingRequests, setPendingRequests] = useState<FriendRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [streak, setStreak] = useState<number>(0);
 
   useEffect(() => {
     const auth = getAuth();
@@ -59,7 +61,6 @@ export default function FriendsScreen() {
   useEffect(() => {
     if (!user) return;
     const db = getFirestore();
-
     const friendsUnsubscribe = onSnapshot(
       query(
         collection(db, 'friends'),
@@ -90,7 +91,15 @@ export default function FriendsScreen() {
         });
 
         await Promise.all(friendPromises);
-
+        const currentUserDoc = await getDoc(doc(db, 'users', user.uid));
+        const currentUserData = currentUserDoc.data();
+        if (currentUserData) {
+          friendsList.push({
+            id: user.uid,
+            email: 'You',
+            streak: currentUserData.streak || 0,
+          });
+        }
         friendsList.sort((a, b) => b.streak - a.streak);
         setFriends(friendsList);
       },
@@ -400,7 +409,7 @@ export default function FriendsScreen() {
 
       {/* Friends list section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>My Friends</Text>
+        <Text style={styles.sectionTitle}>Leaderboard</Text>
         {friends.length === 0 ? (
           <Text style={styles.emptyText}>
             No friends yet. Add some friends!
@@ -409,10 +418,18 @@ export default function FriendsScreen() {
           <FlatList
             data={friends}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View style={styles.friendItem}>
+            renderItem={({ item, index }) => (
+              <View style={[styles.friendItem, item.id === user?.uid && styles.currentUserItem]}>
+                <View style={styles.rankText}>
+                  {index === 0 ? (
+                    <MaterialCommunityIcons name="crown" size={28} color="gold" />
+                  ) : (
+                    <Text style={styles.rankText}> {index + 1}.</Text>
+                  )}
+                </View>
                 <View style={styles.friendInfo}>
-                  <Text style={styles.friendEmail}>{item.email}</Text>
+
+                  <Text style={[styles.friendEmail, item.id === user?.uid && styles.currentUserEmail]}>{item.email}</Text>
                   <View style={styles.streakContainer}>
                     <MaterialCommunityIcons
                       name="fire"
@@ -450,12 +467,14 @@ export default function FriendsScreen() {
         )}
       </View>
 
-      {loading && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color={COLORS.accent} />
-        </View>
-      )}
-    </SafeAreaView>
+      {
+        loading && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color={COLORS.accent} />
+          </View>
+        )
+      }
+    </SafeAreaView >
   );
 }
 
@@ -513,6 +532,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  currentUserItem: {
+    backgroundColor: '#2980b9',
+  },
   friendInfo: {
     flex: 1,
   },
@@ -520,6 +542,9 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     fontSize: 16,
     marginBottom: 4,
+  },
+  currentUserEmail: {
+    fontWeight: 'bold',
   },
   streakContainer: {
     flexDirection: 'row',
@@ -581,4 +606,13 @@ const styles = StyleSheet.create({
     padding: 5,
     color: COLORS.text,
   },
+  rankText: {
+    color: 'pink',
+    fontWeight: 'bold',
+    fontSize: 25,
+    marginRight: 8,
+    width: 32,
+    textAlign: 'center'
+
+  }
 });
