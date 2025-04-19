@@ -56,7 +56,6 @@
           "backgroundColor": "#30354D"
         }
       ]
-      
     ],
     "experiments": {
       "typedRoutes": true
@@ -67,6 +66,14 @@
       "androidMode": "default",
       "androidCollapsedTitle": "#{unread_notifications} new notifications",
       "iosDisplayInForeground": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "c563c407-9c79-45e8-acde-a2c55d17a416"
+      }
     }
   }
 }
