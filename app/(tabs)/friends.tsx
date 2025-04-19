@@ -439,28 +439,30 @@ export default function FriendsScreen() {
                     <Text style={styles.streakText}>{item.streak}</Text>
                   </View>
                 </View>
-                <TouchableOpacity
-                  style={styles.removeButton}
-                  onPress={() => {
-                    Alert.alert(
-                      'Remove Friend',
-                      `Are you sure you want to remove ${item.email}?`,
-                      [
-                        { text: 'Cancel', style: 'cancel' },
-                        {
-                          text: 'Remove',
-                          onPress: () => removeFriend(item),
-                        },
-                      ],
-                    );
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="account-remove"
-                    size={24}
-                    color={COLORS.error}
-                  />
-                </TouchableOpacity>
+                {item.id !== user?.uid && (
+                  <TouchableOpacity
+                    style={styles.removeButton}
+                    onPress={() => {
+                      Alert.alert(
+                        'Remove Friend',
+                        `Are you sure you want to remove ${item.email}?`,
+                        [
+                          { text: 'Cancel', style: 'cancel' },
+                          {
+                            text: 'Remove',
+                            onPress: () => removeFriend(item),
+                          },
+                        ],
+                      );
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name="account-remove"
+                      size={24}
+                      color={COLORS.error}
+                    />
+                  </TouchableOpacity>
+                )}
               </View>
             )}
           />
@@ -533,7 +535,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   currentUserItem: {
-    backgroundColor: '#2980b9',
+    backgroundColor: '#a678b4',
   },
   friendInfo: {
     flex: 1,
