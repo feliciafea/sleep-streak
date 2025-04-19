@@ -43,5 +43,4 @@ app-example
 /ios
 
 # Firebase creds
-google-services.json
 GoogleService-Info.plist
