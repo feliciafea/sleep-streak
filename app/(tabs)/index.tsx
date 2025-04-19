@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: 'bold',
     color: COLORS.text,
+    marginTop: 18,
   },
   streakText: {
     fontSize: 50,

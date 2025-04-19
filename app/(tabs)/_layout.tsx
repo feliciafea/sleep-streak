@@ -2,8 +2,7 @@ import { useRouter, Tabs } from 'expo-router';
 import React, { useEffect } from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import Entypo from '@expo/vector-icons/Entypo';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, View, Text } from 'react-native';
 import { COLORS } from '@/constants/theme';
 import { getAuth } from '@react-native-firebase/auth';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
@@ -18,6 +17,7 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
+
 
 GoogleSignin.configure({
   webClientId:
@@ -50,10 +50,10 @@ export default function TabLayout() {
       userBedTime = userDoc.data()?.bedTime?.toDate() || new Date();
     }
 
-    // Daily reminder notifications
+    // Daily reminder notifications 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: 'Time to sleep! 😴',
+        title: "Time to sleep! 😴",
         body: "Don't forget to start your sleep session to maintain your streak!",
         sound: true,
       },
@@ -69,106 +69,104 @@ export default function TabLayout() {
     });
   };
 
-  useEffect(() => {
-    registerForPushNotificationsAsync();
-    setupSleepReminder();
-  }, []);
-
-  const registerForPushNotificationsAsync = async () => {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-
-    if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    } else {
-      console.log('Failed to get push token for push notification!');
-      return;
-    }
-  };
+    useEffect(() => {
+      registerForPushNotificationsAsync();
+      setupSleepReminder();
+    }, []);
+  
+    const registerForPushNotificationsAsync = async () => {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      } else {
+        console.log('Failed to get push token for push notification!');
+        return;
+      }
+    };
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: true,
-        headerTitle: '',
-        headerShadowVisible: false,
-        headerLeft: () => (
-          <TouchableOpacity
-            style={{ marginLeft: 20 }}
-            onPress={() => handleLogout()}
-          >
-            <MaterialCommunityIcons
-              name="logout"
-              size={24}
-              color={COLORS.icon}
-            />
-          </TouchableOpacity>
-        ),
-        headerRight: () => (
-          <TouchableOpacity
-            style={{ marginRight: 20 }}
-            onPress={() =>
-              router.push({
-                pathname: '../settings',
-                params: { userId: currentUser?.uid },
-              })
-            }
-          >
-            <MaterialCommunityIcons name="cog" size={24} color={COLORS.icon} />
-          </TouchableOpacity>
-        ),
-        headerStyle: {
-          backgroundColor: COLORS.background,
-        },
-        tabBarStyle: {
-          backgroundColor: COLORS.tabBar,
-        },
-        tabBarActiveTintColor: COLORS.accent,
-        tabBarInactiveTintColor: COLORS.icon,
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Sleep',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name="power-sleep"
-              size={24}
-              color={color}
-            />
+    <View style={{ flex: 1 }}>
+      <View style={{
+        width: '100%',
+        height: 50,
+        backgroundColor: '#F5F5F5',
+        borderBottomWidth: 1,
+        borderColor: '#E0E0E0',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+        paddingHorizontal: 10,
+        marginBottom: 0,
+
+      }}>
+        <Text style={{
+          color: '#757575',
+          fontSize: 12
+        }}>Advertisement</Text>
+      </View>
+      <Tabs
+        screenOptions={{
+          headerShown: true,
+          headerTitle: '',
+          headerShadowVisible: false,
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{ marginLeft: 20 }}
+              onPress={() => handleLogout()}
+            >
+              <MaterialCommunityIcons
+                name="logout"
+                size={24}
+                color={COLORS.icon}
+              />
+            </TouchableOpacity>
           ),
-        }}
-      />
-      <Tabs.Screen
-        name="history"
-        options={{
-          title: 'History',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="history" size={24} color={color} />
+          headerRight: () => (
+            <TouchableOpacity style={{ marginRight: 20 }} onPress={() => router.push({ pathname: '../settings', params: { userId: currentUser?.uid }})}>
+              <MaterialCommunityIcons name="cog" size={24} color={COLORS.icon} />
+            </TouchableOpacity>
           ),
+          headerStyle: {
+            backgroundColor: COLORS.background,
+            paddingTop: 0,
+            height: 55,
+          },
+          tabBarStyle: {
+            backgroundColor: COLORS.tabBar,
+          },
+          tabBarActiveTintColor: COLORS.accent,
+          tabBarInactiveTintColor: COLORS.icon,
         }}
-      />
-      <Tabs.Screen
-        name="friends"
-        options={{
-          title: 'Friends',
-          tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="user-friends" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="shop"
-        options={{
-          title: 'Shop',
-          tabBarIcon: ({ color }) => (
-            <Entypo name="shop" size={24} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: 'Sleep',
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons
+                name="power-sleep"
+                size={24}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="friends"
+          options={{
+            title: 'Friends',
+            tabBarIcon: ({ color }) => (
+              <FontAwesome5 name="user-friends" size={24} color={color} />
+            ),
+          }}
+        />
+      </Tabs>
+     
+
+      
+    </View>
   );
 }

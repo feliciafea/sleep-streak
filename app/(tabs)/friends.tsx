@@ -418,6 +418,8 @@ export default function FriendsScreen() {
           <FlatList
             data={friends}
             keyExtractor={(item) => item.id}
+            showsVerticalScrollIndicator={true}
+            style={{ maxHeight: '100%' }}
             renderItem={({ item, index }) => (
               <View style={[styles.friendItem, item.id === user?.uid && styles.currentUserItem]}>
                 <View style={styles.rankText}>
