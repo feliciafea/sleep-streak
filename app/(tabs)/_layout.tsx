@@ -2,6 +2,7 @@ import { useRouter, Tabs } from 'expo-router';
 import React, { useEffect } from 'react';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import Entypo from '@expo/vector-icons/Entypo';
 import { TouchableOpacity } from 'react-native';
 import { COLORS } from '@/constants/theme';
 import { getAuth } from '@react-native-firebase/auth';
@@ -17,7 +18,6 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-
 
 GoogleSignin.configure({
   webClientId:
@@ -50,10 +50,10 @@ export default function TabLayout() {
       userBedTime = userDoc.data()?.bedTime?.toDate() || new Date();
     }
 
-    // Daily reminder notifications 
+    // Daily reminder notifications
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: "Time to sleep! 😴",
+        title: 'Time to sleep! 😴',
         body: "Don't forget to start your sleep session to maintain your streak!",
         sound: true,
       },
@@ -69,23 +69,24 @@ export default function TabLayout() {
     });
   };
 
-    useEffect(() => {
-      registerForPushNotificationsAsync();
-      setupSleepReminder();
-    }, []);
-  
-    const registerForPushNotificationsAsync = async () => {
-      const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      
-      if (existingStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      } else {
-        console.log('Failed to get push token for push notification!');
-        return;
-      }
-    };
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+    setupSleepReminder();
+  }, []);
+
+  const registerForPushNotificationsAsync = async () => {
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    } else {
+      console.log('Failed to get push token for push notification!');
+      return;
+    }
+  };
 
   return (
     <Tabs
@@ -106,7 +107,15 @@ export default function TabLayout() {
           </TouchableOpacity>
         ),
         headerRight: () => (
-          <TouchableOpacity style={{ marginRight: 20 }} onPress={() => router.push({ pathname: '../settings', params: { userId: currentUser?.uid }})}>
+          <TouchableOpacity
+            style={{ marginRight: 20 }}
+            onPress={() =>
+              router.push({
+                pathname: '../settings',
+                params: { userId: currentUser?.uid },
+              })
+            }
+          >
             <MaterialCommunityIcons name="cog" size={24} color={COLORS.icon} />
           </TouchableOpacity>
         ),
@@ -139,6 +148,15 @@ export default function TabLayout() {
           title: 'Friends',
           tabBarIcon: ({ color }) => (
             <FontAwesome5 name="user-friends" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="shop"
+        options={{
+          title: 'Shop',
+          tabBarIcon: ({ color }) => (
+            <Entypo name="shop" size={24} color={color} />
           ),
         }}
       />
