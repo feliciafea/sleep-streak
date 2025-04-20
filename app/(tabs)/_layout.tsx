@@ -92,7 +92,7 @@ export default function TabLayout() {
     <View style={{ flex: 1 }}>
       <View style={{
         width: '100%',
-        height: 50,
+        height: 58,
         backgroundColor: '#F5F5F5',
         borderBottomWidth: 1,
         borderColor: '#E0E0E0',
@@ -151,6 +151,19 @@ export default function TabLayout() {
         }}
       >
         <Tabs.Screen
+          name="index"
+          options={{
+            title: 'Sleep',
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons
+                name="power-sleep"
+                size={24}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
           name="history"
           options={{
             title: 'History',
@@ -159,19 +172,6 @@ export default function TabLayout() {
             ),
           }}
         />
-          <Tabs.Screen
-            name="index"
-            options={{
-              title: 'Sleep',
-              tabBarIcon: ({ color }) => (
-                <MaterialCommunityIcons
-                  name="power-sleep"
-                  size={24}
-                  color={color}
-                />
-              ),
-            }}
-          />
         <Tabs.Screen
           name="friends"
           options={{
