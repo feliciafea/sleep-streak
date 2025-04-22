@@ -92,7 +92,7 @@ export default function TabLayout() {
     <View style={{ flex: 1 }}>
       <View style={{
         width: '100%',
-        height: 58,
+        height: 65,
         backgroundColor: '#F5F5F5',
         borderBottomWidth: 1,
         borderColor: '#E0E0E0',
@@ -101,6 +101,7 @@ export default function TabLayout() {
         flexDirection: 'row',
         paddingHorizontal: 10,
         marginBottom: 0,
+        paddingTop: 25,
 
       }}>
         <Text style={{
